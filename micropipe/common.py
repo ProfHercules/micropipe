@@ -21,6 +21,13 @@ class FlowValue(Generic[T]):
     def __repr__(self) -> str:
         return self.toJSON()
 
+    def __eq__(self, __o: object) -> bool:
+        return (
+            isinstance(__o, FlowValue)
+            and __o.value == self.value
+            and __o.meta == self.meta
+        )
+
     def toJSON(self):
         try:
             return json.dumps(

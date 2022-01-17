@@ -4,6 +4,7 @@ import asyncio
 from asyncio.log import logger
 import logging
 from typing import Any, Callable, Dict, Generic, List, Optional, TypeVar, Union
+import aiohttp
 
 import coloredlogs
 from aiohttp import ClientSession
@@ -22,12 +23,15 @@ class Pipeline:
     values_flowed: int
     values_lost: List[FlowValue[Any]]
 
+    did_create_session: bool
+
     def __init__(
         self,
         stages: List[PipelineStage],
         logger: logging.Logger,
         session: Optional[ClientSession] = None,
     ):
+        assert len(stages) > 0
         self.stages = stages
         self.logger = logger
         self.session = session
@@ -38,8 +42,18 @@ class Pipeline:
         self.values_flowed = 0
         self.values_lost = []
 
+        self.did_create_session = False
+
     async def flow(self):
         self.logger.info(f"[Pipeline] Starting flow with {len(self.stages)} stages")
+
+        if self.session == None:
+            should_create_session = any(
+                map(lambda s: hasattr(s, "session"), self.stages)
+            )
+            if should_create_session:
+                self.did_create_session = True
+                self.session = aiohttp.ClientSession()
 
         prev_stage: Optional[PipelineStage] = None
         for stage in self.stages:
@@ -62,7 +76,16 @@ class Pipeline:
             pct,
         )
         self.logger.debug(f"Values Lost:\n{self.values_lost}")
+
+        if self.did_create_session and self.session.closed == False:
+            await self.session.close()
+
         return self.stages[-1].read()
+
+    def flow_sync(self):
+        loop = asyncio.get_event_loop()
+        output = loop.run_until_complete(self.flow())
+        return output
 
 
 # func(output_val, meta_data) -> FlowVal(output_val)
@@ -89,7 +112,7 @@ class PipelineStage(Generic[I, O]):
     def name(self) -> str:
         return self.__class__.__name__
 
-    def read(self):
+    def read(self) -> List[FlowValue[O]]:
         output = []
         while not self.output_queue.empty():
             res = self.output_queue.get_nowait()

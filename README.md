@@ -6,4 +6,4 @@ A micro data pipeline tool to help rapidly prototype local data workflows when w
 
 - [ ] Add examples
 - [ ] Add documentation
-- [ ] Add tests
+- [ ] Add (way) more tests
