@@ -83,4 +83,4 @@ class PipelineStage(Generic[I, O]):
 
     async def _task_handler(self, flow_val: FlowValue[I]) -> bool:
         ...
-        assert False  # default _task_handler should not be called
+        raise NotImplementedError()  # default _task_handler should not be called
