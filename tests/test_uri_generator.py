@@ -1,5 +1,6 @@
-from micropipe import Pipeline
-from micropipe.stages import *
+import logging
+
+from micropipe import FlowGenerator, Pipeline, UrlGenerator
 
 
 def test_uri_generator():

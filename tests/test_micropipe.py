@@ -1,6 +1,7 @@
+import logging
+
 import pytest
 from micropipe import Pipeline
-from micropipe.stages import *
 
 
 def test_micropipe_no_stages():

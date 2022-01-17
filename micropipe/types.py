@@ -1,13 +1,15 @@
 import asyncio
 import json
-from typing import Any, Dict, Generic, TypeVar, Union
-
-
-class EndFlow:
-    pass
-
+from typing import Any, Callable, Dict, Generic, TypeVar, Union
 
 T = TypeVar("T")
+O = TypeVar("O")
+
+
+# classes
+class EndFlow:
+    def __eq__(self, __o: object) -> bool:
+        return isinstance(__o, EndFlow)
 
 
 class FlowValue(Generic[T]):
@@ -40,8 +42,9 @@ class FlowValue(Generic[T]):
             return "Cannot dump value to JSON"
 
 
+# type aliases
+
+# func(output_val, meta_data) -> FlowVal(output_val)
+MetaFunc = Callable[[O, Dict[str, Any]], Dict[str, Any]]
+
 FlowQueue = asyncio.Queue[Union[FlowValue[T], EndFlow]]
-
-
-class PipelineException(Exception):
-    pass

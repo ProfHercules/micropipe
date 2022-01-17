@@ -1,15 +1,15 @@
 from __future__ import annotations
 
 import asyncio
-from asyncio.log import logger
 import logging
-from typing import Any, Callable, Dict, Generic, List, Optional, TypeVar, Union
-import aiohttp
+from typing import Any, Dict, Generic, List, Optional, TypeVar
 
+import aiohttp
 import coloredlogs
 from aiohttp import ClientSession
-from micropipe.common import EndFlow, FlowQueue, FlowValue
 from tqdm.asyncio import tqdm
+
+from micropipe.types import EndFlow, FlowQueue, FlowValue, MetaFunc
 
 I = TypeVar("I")  # input
 O = TypeVar("O")  # output
@@ -57,7 +57,7 @@ class Pipeline:
 
         prev_stage: Optional[PipelineStage] = None
         for stage in self.stages:
-            flow_worker = stage.flow(self, prev_stage)
+            flow_worker = stage._flow(self, prev_stage)
             if prev_stage:
                 task = asyncio.create_task(flow_worker)
                 self.tasks.append(task)
@@ -80,7 +80,7 @@ class Pipeline:
         if self.did_create_session and self.session.closed == False:
             await self.session.close()
 
-        return self.stages[-1].read()
+        return self.stages[-1]._read()
 
     def flow_sync(self):
         loop = asyncio.get_event_loop()
@@ -88,60 +88,56 @@ class Pipeline:
         return output
 
 
-# func(output_val, meta_data) -> FlowVal(output_val)
-MetaFunc = Callable[[O, Dict[str, Any]], Dict[str, Any]]
-
-
 class PipelineStage(Generic[I, O]):
-    prev_stage: Optional[PipelineStage[Any, I]]
-    output_queue: FlowQueue[O]
-    meta_func: Optional[MetaFunc]
-    logger: logging.Logger
+    _prev_stage: Optional[PipelineStage[Any, I]]
+    _output_queue: FlowQueue[O]
+    _meta_func: Optional[MetaFunc]
+    _logger: logging.Logger
 
     def __init__(
         self,
         meta_func: Optional[MetaFunc] = None,
         logger: Optional[logging.Logger] = None,
     ):
-        self.output_queue = asyncio.Queue()
-        self.meta_func = meta_func
-        self.logger = logging.getLogger() if logger is None else logger
-        self.prev_stage = None
+        self._output_queue = asyncio.Queue()
+        self._meta_func = meta_func
+        self._logger = logging.getLogger() if logger is None else logger
+        self._prev_stage = None
 
     @property
     def name(self) -> str:
         return self.__class__.__name__
 
-    def read(self) -> List[FlowValue[O]]:
+    def _read(self) -> List[FlowValue[O]]:
         output = []
-        while not self.output_queue.empty():
-            res = self.output_queue.get_nowait()
+        while not self._output_queue.empty():
+            res = self._output_queue.get_nowait()
 
             if not isinstance(res, EndFlow):
                 output.append(res)
 
         return output
 
-    def flow(self, pipeline: Pipeline, prev_stage: Optional[PipelineStage[Any, I]]):
+    def _flow(self, pipeline: Pipeline, prev_stage: Optional[PipelineStage[Any, I]]):
         assert prev_stage is not None
-        self.prev_stage = prev_stage
-        self.logger = pipeline.logger
+        self._prev_stage = prev_stage
+        self._logger = pipeline.logger
 
-        return self.worker(pipeline)
+        return self._worker(pipeline)
 
-    async def worker(self, pipeline: Pipeline):
-        assert self.prev_stage is not None
-        prev_stage = self.prev_stage
+    async def _worker(self, pipeline: Pipeline):
+        assert self._prev_stage is not None
+        prev_stage = self._prev_stage
         tasks = []
         scheduled = 0
 
         while True:
-            value = await prev_stage.output_queue.get()
+            value = await prev_stage._output_queue.get()
 
             if isinstance(value, EndFlow):
                 break
             # else
-            task = asyncio.create_task(self.task_shield(pipeline, value))
+            task = asyncio.create_task(self._task_shield(pipeline, value))
             scheduled += 1
             tasks.append(task)
 
@@ -150,7 +146,7 @@ class PipelineStage(Generic[I, O]):
 
         pct = round(float(success) / float(scheduled) * 100.0, 1)
 
-        self.logger.info(
+        self._logger.info(
             "[%s] %d / %d (%.1f %%) tasks completed successfully.",
             self.name,
             success,
@@ -158,19 +154,19 @@ class PipelineStage(Generic[I, O]):
             pct,
         )
 
-        await self.output_queue.put(EndFlow())
+        await self._output_queue.put(EndFlow())
 
-    def wrap_flow_value(self, out_val: O, meta: Dict[str, Any]) -> FlowValue[O]:
-        if self.meta_func:
-            meta = self.meta_func(out_val, meta)
+    def _wrap_flow_value(self, out_val: O, meta: Dict[str, Any]) -> FlowValue[O]:
+        if self._meta_func:
+            meta = self._meta_func(out_val, meta)
         return FlowValue(out_val, meta)
 
-    async def task_shield(self, pipeline: Pipeline, flow_val: FlowValue[I]) -> bool:
+    async def _task_shield(self, pipeline: Pipeline, flow_val: FlowValue[I]) -> bool:
         success = True
         try:
-            success = await self.task_handler(flow_val)
+            success = await self._task_handler(flow_val)
         except Exception as e:
-            self.logger.exception("[%s] TaskHandler Exception: %s", self.name, e)
+            self._logger.exception("[%s] TaskHandler Exception: %s", self.name, e)
             success = False
 
         if success:
@@ -182,7 +178,7 @@ class PipelineStage(Generic[I, O]):
 
         return success
 
-    async def task_handler(self, flow_val: FlowValue[I]) -> bool:
+    async def _task_handler(self, flow_val: FlowValue[I]) -> bool:
         ...
         # try:
         #     # tapped = self.apply_flow_tap(in_val)
