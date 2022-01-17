@@ -1,0 +1,9 @@
+{
+  "source_directories": [
+    {
+      "import_root": ".",
+      "source": "micropipe"
+    }
+  ],
+  "taint_models_path": "/Users/hercules/Library/Caches/pypoetry/virtualenvs/micropipe-4vJjBkaL-py3.9/lib"
+}

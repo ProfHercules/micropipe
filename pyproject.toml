@@ -1,0 +1,33 @@
+[tool.poetry]
+authors = ["Hercules <hercules@nullsafe.dev>"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+]
+description = "A toy data pipeline"
+keywords = ["data pipeline"]
+license = "GPL-3.0-only"
+name = "micropipe"
+readme = "README.rst"
+repository = "https://github.com/ProfHercules/micropipe"
+version = "0.0.1"
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/ProfHercules/micropipe/issues"
+
+[tool.poetry.dependencies]
+aiofiles = "^0.8.0"
+aiohttp = "^3.8.1"
+coloredlogs = "^15.0.1"
+diskcache = "^5.4.0"
+python = "^3.8"
+tqdm = "^4.62.3"
+
+[tool.poetry.dev-dependencies]
+black = "^21.12b0"
+pytest = "^5.2"
+pyre-check = "^0.9.10"
+
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0"]
