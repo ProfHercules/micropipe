@@ -1,20 +1,18 @@
 from typing import Generic, List, TypeVar, Union
 
 from diskcache import Deque
-from micropipe.base import Pipeline, PipelineStage
+from micropipe.base_stage import PipelineStage
 from micropipe.types import EndFlow, FlowValue
 
 I = TypeVar("I")  # input
 
 
 class CollectList(Generic[I], PipelineStage[I, List[I]]):
-    async def _worker(self, pipeline: Pipeline):
-        assert self._prev_stage is not None
-        prev_stage = self._prev_stage
+    async def _flow(self) -> None:
         output: List[I] = []
 
         while True:
-            v = await prev_stage._output_queue.get()
+            v = await self._input_queue.get()
 
             if isinstance(v, EndFlow):
                 break
@@ -29,14 +27,11 @@ class CollectList(Generic[I], PipelineStage[I, List[I]]):
 
 
 class CollectDeque(Generic[I], PipelineStage[I, Deque]):
-    async def _worker(self, pipeline: Pipeline):
-        assert self._prev_stage is not None
-        prev_stage = self._prev_stage
-
+    async def _flow(self) -> None:
         cache = Deque()
 
         while True:
-            v: Union[FlowValue, EndFlow] = await prev_stage._output_queue.get()
+            v: Union[FlowValue, EndFlow] = await self._input_queue.get()
 
             if isinstance(v, EndFlow):
                 break

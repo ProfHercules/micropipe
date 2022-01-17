@@ -20,4 +20,4 @@ def test_uri_generator():
     assert len(urls) == 10
 
     for id in ids:
-        idx = urls.index(f"https://jsonplaceholder.typicode.com/users/{id}")
+        _ = urls.index(f"https://jsonplaceholder.typicode.com/users/{id}")

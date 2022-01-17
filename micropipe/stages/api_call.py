@@ -1,9 +1,10 @@
 import asyncio
 import logging
-from typing import Any, Awaitable, Callable, Generic, Literal, Optional, TypeVar
+from typing import Awaitable, Callable, Generic, Literal, Optional, TypeVar
 
+import aiohttp
 from aiohttp import ClientResponse, ClientSession
-from micropipe.base import Pipeline, PipelineStage
+from micropipe.base_stage import PipelineStage
 from micropipe.exceptions import PipelineException
 from micropipe.types import FlowValue, MetaFunc
 
@@ -35,6 +36,7 @@ class ApiCall(Generic[O], PipelineStage[str, O]):
         method: HTTP_METHOD = "GET",
         retry_limit: int = 5,
         retry_timout_sec: int = 15,
+        session: Optional[ClientSession] = None,
         meta_func: Optional[MetaFunc] = None,
         logger: Optional[logging.Logger] = None,
     ):
@@ -43,21 +45,26 @@ class ApiCall(Generic[O], PipelineStage[str, O]):
         self.__decode_func = decode_func
         self.__retry_limit = retry_limit
         self.__retry_timout_sec = retry_timout_sec
-        self.__session = None
+        self.__session = session
 
-    def _flow(self, pipeline: Pipeline, prev_stage: Optional[PipelineStage[Any, str]]):
-        self.__session = pipeline.session
-        return super()._flow(pipeline, prev_stage)
+    async def _flow(self) -> None:
+        should_close_session = False
+        if self.__session is None:
+            self.__session = aiohttp.ClientSession()
+            should_close_session = True
+        await super()._flow()
+        if should_close_session:
+            assert self.__session is not None
+            await self.__session.close()
 
     async def _task_handler(self, flow_val: FlowValue[str]) -> bool:
-        assert self.__session is not None
-        session = self.__session
         remaining_tries = max(self.__retry_limit + 1, 1)
 
         while remaining_tries > 0:
             remaining_tries -= 1
             try:
-                response = await session.request(self.__method, flow_val.value)
+                assert self.__session is not None
+                response = await self.__session.request(self.__method, flow_val.value)
                 status = response.status
 
                 if status < 200 or status >= 300:

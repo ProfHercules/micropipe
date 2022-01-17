@@ -10,7 +10,7 @@ license = "GPL-3.0-only"
 name = "micropipe"
 readme = "README.md"
 repository = "https://github.com/ProfHercules/micropipe"
-version = "0.0.1"
+version = "0.1.0"
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/ProfHercules/micropipe/issues"
@@ -24,6 +24,7 @@ python = "^3.8"
 tqdm = "^4.62.3"
 
 [tool.poetry.dev-dependencies]
+aioresponses = "^0.7.3"
 black = "^21.12b0"
 pyre-check = "^0.9.10"
 pytest = "^6.2.5"

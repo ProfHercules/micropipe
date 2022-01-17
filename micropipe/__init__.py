@@ -1,4 +1,5 @@
 from .base import Pipeline
+from .base_stage import PipelineStage
 from .exceptions import PipelineException
 from .stages import (
     ApiCall,

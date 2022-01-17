@@ -2,7 +2,7 @@ import logging
 from typing import Any, Callable, Generic, Optional, TypeVar
 
 import aiofiles
-from micropipe.base import PipelineStage
+from micropipe.base_stage import PipelineStage
 from micropipe.types import FlowValue, MetaFunc
 
 I = TypeVar("I")  # input

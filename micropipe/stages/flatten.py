@@ -1,6 +1,6 @@
 from typing import Generic, List, TypeVar
 
-from micropipe.base import PipelineStage
+from micropipe.base_stage import PipelineStage
 from micropipe.types import FlowValue
 
 I = TypeVar("I")

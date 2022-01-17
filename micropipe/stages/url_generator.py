@@ -3,7 +3,7 @@ import re
 import urllib.parse
 from typing import Callable, Dict, Generic, Optional, TypeVar
 
-from micropipe.base import PipelineStage
+from micropipe.base_stage import PipelineStage
 from micropipe.types import FlowValue, MetaFunc
 
 I = TypeVar("I")  # input

@@ -3,9 +3,10 @@ import logging
 import time
 from typing import Generic, Optional, TypeVar, Union
 
-from micropipe.base import Pipeline, PipelineStage
-from micropipe.types import EndFlow, FlowValue, MetaFunc
 from tqdm.asyncio import tqdm
+
+from micropipe.base_stage import PipelineStage
+from micropipe.types import EndFlow, FlowValue, MetaFunc
 
 I = TypeVar("I")  # input
 
@@ -33,9 +34,7 @@ class RateLimit(Generic[I], PipelineStage[I, I]):
 
         while True:
             start = time.monotonic()
-            value: Union[
-                FlowValue, EndFlow
-            ] = await self._prev_stage._output_queue.get()
+            value = await self._input_queue.get()
             yield value
 
             sleep_for = sleep_time - (time.monotonic() - start)
@@ -43,7 +42,7 @@ class RateLimit(Generic[I], PipelineStage[I, I]):
             if sleep_for > 0.0:
                 await asyncio.sleep(sleep_for)
 
-    async def _worker(self, pipeline: Pipeline):
+    async def _flow(self):
         async for value in tqdm(self.__rate_limiter(), desc=self.name):
             if isinstance(value, EndFlow):
                 break
