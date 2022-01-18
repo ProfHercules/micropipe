@@ -7,9 +7,9 @@ from typing import Any, Callable, Dict, Generic, Optional, TypeVar, Union
 T = TypeVar("T")
 O = TypeVar("O")
 
+# helper type aliases
 MetaData = Dict[str, Any]
 MetaFunc = Callable[[O, MetaData], MetaData]
-FlowQueue = asyncio.Queue[Union["FlowValue[T]", "EndFlow"]]
 
 # classes
 class EndFlow:
@@ -45,3 +45,7 @@ class FlowValue(Generic[T]):
             )
         except:
             return "Cannot dump value to JSON"
+
+
+# type alias dependant on above classes
+FlowQueue = asyncio.Queue[Union[FlowValue[T], EndFlow]]
