@@ -10,7 +10,7 @@ async def test_api_call():
     session = aiohttp.ClientSession()
     stage = ApiCall(decode_func=lambda resp: resp.json(), session=session)
 
-    stage._input_queue.put_nowait(FlowValue("http://test.example.com", {}))
+    stage._input_queue.put_nowait(FlowValue("http://test.example.com"))
     stage._input_queue.put_nowait(EndFlow())
 
     data = {"id": 1, "name": "test"}
@@ -20,5 +20,5 @@ async def test_api_call():
 
         await stage._flow()
         assert stage._output_queue.qsize() == 2
-        assert stage._output_queue.get_nowait() == FlowValue(data, {})
+        assert stage._output_queue.get_nowait() == FlowValue(data)
         assert stage._output_queue.get_nowait() == EndFlow()

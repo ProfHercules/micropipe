@@ -1,6 +1,6 @@
 import asyncio
 import json
-from typing import Any, Callable, Dict, Generic, TypeVar, Union
+from typing import Any, Callable, Dict, Generic, Optional, TypeVar, Union
 
 T = TypeVar("T")
 O = TypeVar("O")
@@ -16,9 +16,9 @@ class FlowValue(Generic[T]):
     value: T
     meta: Dict[str, Any]
 
-    def __init__(self, value: T, meta: Dict[str, Any]):
+    def __init__(self, value: T, meta: Optional[Dict[str, Any]] = None):
         self.value = value
-        self.meta = meta
+        self.meta = {} if meta is None else meta
 
     def __repr__(self) -> str:
         return self.toJSON()

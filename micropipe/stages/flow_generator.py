@@ -17,6 +17,6 @@ class FlowGenerator(Generic[I], PipelineStage[None, I]):
         super().__init__(meta_func=None, logger=logger)
 
         for i in iterator:
-            self._output_queue.put_nowait(FlowValue(i, {}))
+            self._output_queue.put_nowait(FlowValue(i))
 
         self._output_queue.put_nowait(EndFlow())

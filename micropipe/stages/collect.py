@@ -20,7 +20,7 @@ class CollectList(Generic[I], PipelineStage[I, List[I]]):
             output.append(v.value)
 
         self._logger.info("[%s] Output list complete", self.name)
-        out = FlowValue(output, {})
+        out = FlowValue(output)
 
         await self._output_queue.put(out)
         await self._output_queue.put(EndFlow())
@@ -39,7 +39,7 @@ class CollectDeque(Generic[I], PipelineStage[I, Deque]):
             cache.append(v.value)
 
         self._logger.info("[%s] Deque collection completed", self.name)
-        out = FlowValue(cache, {})
+        out = FlowValue(cache)
 
         await self._output_queue.put(out)
         await self._output_queue.put(EndFlow())
