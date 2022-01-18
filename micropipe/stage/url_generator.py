@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import re
 import urllib.parse
 from typing import Callable, Dict, Generic, TypeVar

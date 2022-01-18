@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Generic, Iterable, TypeVar
 
 from micropipe.stage.base import BaseStage

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from copy import copy, deepcopy
 from enum import Enum
 from typing import Callable, Generic, TypeVar
