@@ -5,10 +5,6 @@ from micropipe import CollectDequeStage, CollectListStage
 from micropipe.types import EndFlow, FlowValue
 
 
-def checkEqual(l1: list, l2: list):
-    return len(l1) == len(l2) and sorted(l1) == sorted(l2)
-
-
 @pytest.mark.asyncio
 async def test_collect_list():
     stage = CollectListStage()
