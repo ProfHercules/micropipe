@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import asyncio
 import json
+from asyncio import Queue
 from typing import Any, Callable, Dict, Generic, Optional, TypeVar, Union
 
 T = TypeVar("T")
@@ -48,4 +48,4 @@ class FlowValue(Generic[T]):
 
 
 # type alias dependant on above classes
-FlowQueue = asyncio.Queue[Union[FlowValue[T], EndFlow]]
+FlowQueue = Queue[Union[FlowValue[T], EndFlow]]
