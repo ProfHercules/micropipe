@@ -21,13 +21,14 @@ class RateLimitStage(Generic[I], BaseStage[I, I]):
     ):
         super(RateLimitStage, self).__init__(**kwargs)
         self.__max_per_sec = max_per_sec
+        assert self.__max_per_sec > 0.0
 
         # limit the size of the output queue to ensure the next stage can have
         # at most *concurrency_limit* concurrent *task_handler*s running
         if concurrency_limit >= 0:
             self._output_queue = asyncio.Queue(concurrency_limit)
 
-    async def __rate_limiter(self):
+    async def __limited_generator(self):
         sleep_time = 1.0 / self.__max_per_sec
 
         while True:
@@ -41,7 +42,7 @@ class RateLimitStage(Generic[I], BaseStage[I, I]):
                 await asyncio.sleep(sleep_for)
 
     async def _flow(self):
-        async for value in tqdm(self.__rate_limiter(), desc=self.name):
+        async for value in tqdm(self.__limited_generator(), desc=self.name):
             if isinstance(value, EndFlow):
                 break
             # else

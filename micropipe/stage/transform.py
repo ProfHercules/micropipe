@@ -19,7 +19,7 @@ class TransformStage(Generic[I, O], BaseStage[I, O]):
         self.__transformer = transformer
 
     async def _task_handler(self, flow_val: FlowValue[I]) -> bool:
-        transformed: O = self.__transformer(flow_val)
+        transformed = self.__transformer(flow_val)
         result = self._wrap_flow_value(transformed, flow_val.meta)
         await self._output_queue.put(result)
 

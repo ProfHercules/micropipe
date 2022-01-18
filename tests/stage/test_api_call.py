@@ -23,3 +23,5 @@ async def test_api_call():
         assert stage._output_queue.qsize() == 2
         assert stage._output_queue.get_nowait() == FlowValue(data)
         assert stage._output_queue.get_nowait() == EndFlow()
+
+    await session.close()

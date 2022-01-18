@@ -42,7 +42,10 @@ asyncio_mode = 'strict'
 [tool.poe.tasks]
 _black = "black ."
 _isort = "isort ."
+_pyre = "pyre"
+_pytest = "pytest"
 format = ["_black", "_isort"]
+test = ["_pyre", "_pytest"]
 
 [tool.isort]
 profile = "black"

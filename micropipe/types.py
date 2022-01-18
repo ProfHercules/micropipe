@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import asyncio
 import json
 from typing import Any, Callable, Dict, Generic, Optional, TypeVar, Union
@@ -5,6 +7,9 @@ from typing import Any, Callable, Dict, Generic, Optional, TypeVar, Union
 T = TypeVar("T")
 O = TypeVar("O")
 
+MetaData = Dict[str, Any]
+MetaFunc = Callable[[O, MetaData], MetaData]
+FlowQueue = asyncio.Queue[Union["FlowValue[T]", "EndFlow"]]
 
 # classes
 class EndFlow:
@@ -14,9 +19,9 @@ class EndFlow:
 
 class FlowValue(Generic[T]):
     value: T
-    meta: Dict[str, Any]
+    meta: MetaData
 
-    def __init__(self, value: T, meta: Optional[Dict[str, Any]] = None):
+    def __init__(self, value: T, meta: Optional[MetaData] = None):
         self.value = value
         self.meta = {} if meta is None else meta
 
@@ -40,11 +45,3 @@ class FlowValue(Generic[T]):
             )
         except:
             return "Cannot dump value to JSON"
-
-
-# type aliases
-
-# func(output_val, meta_data) -> FlowVal(output_val)
-MetaFunc = Callable[[O, Dict[str, Any]], Dict[str, Any]]
-
-FlowQueue = asyncio.Queue[Union[FlowValue[T], EndFlow]]

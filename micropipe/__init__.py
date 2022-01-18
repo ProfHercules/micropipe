@@ -9,7 +9,6 @@ from .stage import (
     FlowGeneratorStage,
     PassthroughStage,
     RateLimitStage,
-    StoreFileStage,
     TransformStage,
     UrlGeneratorStage,
 )
