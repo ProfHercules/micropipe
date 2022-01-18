@@ -1,0 +1,31 @@
+name: CI
+on: [push]
+
+jobs:
+  ci:
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, 3.10, 3.11]
+        poetry-version: [1.1.12]
+        os: [ubuntu-20.04, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - uses: codecov/codecov-action@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Run image
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: ${{ matrix.poetry-version }}
+      - name: Install dependencies & run tests
+        run: |
+          poetry install
+          poetry run pytest --cov=micropipe --cov-report=xml
+      - name: Upload to codecov
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
+          files: ./coverage.xml
+          fail_ci_if_error: true
+          verbose: true
