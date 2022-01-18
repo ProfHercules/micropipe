@@ -1,23 +1,20 @@
-import logging
-from typing import Callable, Generic, Optional, TypeVar
+from typing import Callable, Generic, TypeVar
 
-from micropipe.base_stage import PipelineStage
-from micropipe.types import FlowValue, MetaFunc
-
+from micropipe.stage.base import BaseStage
+from micropipe.types import FlowValue
 
 I = TypeVar("I")  # input
 
 
-class Passthrough(Generic[I], PipelineStage[I, I]):
+class PassthroughStage(Generic[I], BaseStage[I, I]):
     __func: Callable[[FlowValue[I]], None]
 
     def __init__(
         self,
         func: Callable[[FlowValue[I]], None],
-        meta_func: Optional[MetaFunc] = None,
-        logger: Optional[logging.Logger] = None,
+        **kwargs,
     ):
-        super().__init__(meta_func=meta_func, logger=logger)
+        super(PassthroughStage, self).__init__(**kwargs)
         self.__func = func
 
     async def _task_handler(self, flow_val: FlowValue[I]) -> bool:

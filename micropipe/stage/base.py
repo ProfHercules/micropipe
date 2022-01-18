@@ -12,7 +12,7 @@ I = TypeVar("I")  # input
 O = TypeVar("O")  # output
 
 
-class PipelineStage(Generic[I, O]):
+class BaseStage(Generic[I, O]):
     _input_queue: FlowQueue[I]
     _output_queue: FlowQueue[O]
     _meta_func: Optional[MetaFunc]
@@ -43,7 +43,7 @@ class PipelineStage(Generic[I, O]):
 
         return output
 
-    def _connect(self, prev_stage: PipelineStage[Any, I]) -> asyncio.Task:
+    def _connect(self, prev_stage: BaseStage[Any, I]) -> asyncio.Task:
         self._input_queue = prev_stage._output_queue
         return asyncio.create_task(self._flow())
 

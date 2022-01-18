@@ -1,14 +1,14 @@
-import logging
-from typing import Any, Callable, Generic, Optional, TypeVar
+from typing import Any, Callable, Generic, TypeVar
 
 import aiofiles
-from micropipe.base_stage import PipelineStage
-from micropipe.types import FlowValue, MetaFunc
+
+from micropipe.stage.base import BaseStage
+from micropipe.types import FlowValue
 
 I = TypeVar("I")  # input
 
 
-class StoreFile(Generic[I], PipelineStage[I, I]):
+class StoreFileStage(Generic[I], BaseStage[I, I]):
     __line_formatter: Callable[[FlowValue[I]], str]
     __filename: Callable[[FlowValue[I]], str]
     __mode: Any
@@ -18,10 +18,9 @@ class StoreFile(Generic[I], PipelineStage[I, I]):
         line_formatter: Callable[[FlowValue[I]], str],
         filename: Callable[[FlowValue[I]], str],
         mode: Any,
-        meta_func: Optional[MetaFunc] = None,
-        logger: Optional[logging.Logger] = None,
+        **kwargs,
     ):
-        super().__init__(meta_func=meta_func, logger=logger)
+        super(StoreFileStage, self).__init__(**kwargs)
         self.__line_formatter = line_formatter
         self.__filename = filename
         self.__mode = mode

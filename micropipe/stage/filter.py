@@ -1,22 +1,20 @@
-import logging
-from typing import Callable, Generic, Optional, TypeVar
+from typing import Callable, Generic, TypeVar
 
-from micropipe.base_stage import PipelineStage
-from micropipe.types import FlowValue, MetaFunc
+from micropipe.stage.base import BaseStage
+from micropipe.types import FlowValue
 
 I = TypeVar("I")  # input
 
 
-class Filter(Generic[I], PipelineStage[I, I]):
+class FilterStage(Generic[I], BaseStage[I, I]):
     __should_keep: Callable[[FlowValue[I]], bool]
 
     def __init__(
         self,
         should_keep: Callable[[FlowValue[I]], bool],
-        meta_func: Optional[MetaFunc] = None,
-        logger: Optional[logging.Logger] = None,
+        **kwargs,
     ):
-        super().__init__(meta_func=meta_func, logger=logger)
+        super(FilterStage, self).__init__(**kwargs)
         self.__should_keep = should_keep
 
     async def _task_handler(self, flow_val: FlowValue[I]) -> bool:

@@ -7,22 +7,22 @@ from typing import List
 import coloredlogs
 from tqdm.asyncio import tqdm
 
-from micropipe.base_stage import PipelineStage
-from micropipe.stages.flow_generator import FlowGenerator
+from micropipe.stage import FlowGeneratorStage
+from micropipe.stage.base import BaseStage
 
 
 class Pipeline:
     logger: logging.Logger
-    stages: List[PipelineStage]
+    stages: List[BaseStage]
     tasks: List[asyncio.Task]
 
     def __init__(
         self,
-        stages: List[PipelineStage],
+        stages: List[BaseStage],
         logger: logging.Logger,
     ):
         assert len(stages) > 0
-        assert isinstance(stages[0], FlowGenerator)
+        assert isinstance(stages[0], FlowGeneratorStage)
         self.stages = stages
         self.logger = logger
         self.tasks = []

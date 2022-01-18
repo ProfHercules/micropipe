@@ -1,15 +1,14 @@
-import logging
 import re
 import urllib.parse
-from typing import Callable, Dict, Generic, Optional, TypeVar
+from typing import Callable, Dict, Generic, TypeVar
 
-from micropipe.base_stage import PipelineStage
-from micropipe.types import FlowValue, MetaFunc
+from micropipe.stage.base import BaseStage
+from micropipe.types import FlowValue
 
 I = TypeVar("I")  # input
 
 
-class UrlGenerator(Generic[I], PipelineStage[I, str]):
+class UrlGeneratorStage(Generic[I], BaseStage[I, str]):
     __template_url: str
     __params: Callable[[FlowValue[I]], Dict[str, str]]
 
@@ -17,10 +16,9 @@ class UrlGenerator(Generic[I], PipelineStage[I, str]):
         self,
         template_url: str,
         params: Callable[[FlowValue[I]], Dict[str, str]],
-        meta_func: Optional[MetaFunc] = None,
-        logger: Optional[logging.Logger] = None,
+        **kwargs,
     ):
-        super().__init__(meta_func=meta_func, logger=logger)
+        super(UrlGeneratorStage, self).__init__(**kwargs)
         self.__template_url = template_url
         self.__params = params
 

@@ -1,27 +1,25 @@
 import asyncio
-import logging
 import time
-from typing import Generic, Optional, TypeVar, Union
+from typing import Generic, TypeVar
 
 from tqdm.asyncio import tqdm
 
-from micropipe.base_stage import PipelineStage
-from micropipe.types import EndFlow, FlowValue, MetaFunc
+from micropipe.stage.base import BaseStage
+from micropipe.types import EndFlow
 
 I = TypeVar("I")  # input
 
 
-class RateLimit(Generic[I], PipelineStage[I, I]):
+class RateLimitStage(Generic[I], BaseStage[I, I]):
     __max_per_sec: float
 
     def __init__(
         self,
         max_per_sec: float,
         concurrency_limit: int = 0,
-        meta_func: Optional[MetaFunc] = None,
-        logger: Optional[logging.Logger] = None,
+        **kwargs,
     ):
-        super().__init__(meta_func=meta_func, logger=logger)
+        super(RateLimitStage, self).__init__(**kwargs)
         self.__max_per_sec = max_per_sec
 
         # limit the size of the output queue to ensure the next stage can have

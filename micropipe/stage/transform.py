@@ -1,23 +1,21 @@
-import logging
-from typing import Callable, Generic, Optional, TypeVar
+from typing import Callable, Generic, TypeVar
 
-from micropipe.base_stage import PipelineStage
-from micropipe.types import FlowValue, MetaFunc
+from micropipe.stage.base import BaseStage
+from micropipe.types import FlowValue
 
 I = TypeVar("I")  # input
 O = TypeVar("O")  # output
 
 
-class Transform(Generic[I, O], PipelineStage[I, O]):
+class TransformStage(Generic[I, O], BaseStage[I, O]):
     __transformer: Callable[[FlowValue[I]], O]
 
     def __init__(
         self,
         transformer: Callable[[FlowValue[I]], O],
-        meta_func: Optional[MetaFunc] = None,
-        logger: Optional[logging.Logger] = None,
+        **kwargs,
     ):
-        super().__init__(meta_func=meta_func, logger=logger)
+        super(TransformStage, self).__init__(**kwargs)
         self.__transformer = transformer
 
     async def _task_handler(self, flow_val: FlowValue[I]) -> bool:

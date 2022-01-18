@@ -1,17 +1,16 @@
-from .base import Pipeline
-from .base_stage import PipelineStage
 from .exceptions import PipelineException
-from .stages import (
-    ApiCall,
-    CollectDeque,
-    CollectList,
-    Filter,
-    Flatten,
-    FlowGenerator,
-    Passthrough,
-    RateLimit,
-    StoreFile,
-    Transform,
-    UrlGenerator,
+from .pipeline import Pipeline
+from .stage import (
+    ApiCallStage,
+    CollectDequeStage,
+    CollectListStage,
+    FilterStage,
+    FlattenStage,
+    FlowGeneratorStage,
+    PassthroughStage,
+    RateLimitStage,
+    StoreFileStage,
+    TransformStage,
+    UrlGeneratorStage,
 )
 from .types import EndFlow, FlowQueue, FlowValue, MetaFunc

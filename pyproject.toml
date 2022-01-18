@@ -26,6 +26,8 @@ tqdm = "^4.62.3"
 [tool.poetry.dev-dependencies]
 aioresponses = "^0.7.3"
 black = "^21.12b0"
+isort = "^5.10.1"
+poethepoet = "^0.12.2"
 pyre-check = "^0.9.10"
 pytest = "^6.2.5"
 pytest-asyncio = "^0.17.1"
@@ -36,3 +38,11 @@ requires = ["poetry-core>=1.0.0"]
 
 [tool.pytest.ini_options]
 asyncio_mode = 'strict'
+
+[tool.poe.tasks]
+_black = "black ."
+_isort = "isort ."
+format = ["_black", "_isort"]
+
+[tool.isort]
+profile = "black"

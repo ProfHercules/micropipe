@@ -1,12 +1,12 @@
 from typing import Generic, List, TypeVar
 
-from micropipe.base_stage import PipelineStage
+from micropipe.stage.base import BaseStage
 from micropipe.types import FlowValue
 
 I = TypeVar("I")
 
 
-class Flatten(Generic[I], PipelineStage[List[I], I]):
+class FlattenStage(Generic[I], BaseStage[List[I], I]):
     async def _task_handler(self, flow_val: FlowValue[List[I]]) -> bool:
         for item in flow_val.value:
             result = self._wrap_flow_value(item, flow_val.meta)

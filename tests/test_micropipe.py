@@ -1,6 +1,7 @@
 import logging
 
 import pytest
+
 from micropipe import Pipeline
 
 

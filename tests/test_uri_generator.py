@@ -1,14 +1,14 @@
 import logging
 
-from micropipe import FlowGenerator, Pipeline, UrlGenerator
+from micropipe import FlowGeneratorStage, Pipeline, UrlGeneratorStage
 
 
 def test_uri_generator():
     ids = list(range(1, 11))
 
     stages = [
-        FlowGenerator(iterator=ids),
-        UrlGenerator(
+        FlowGeneratorStage(iterator=ids),
+        UrlGeneratorStage(
             template_url="https://jsonplaceholder.typicode.com/users/{id}",
             params=lambda id: {"id": str(id.value)},
         ),

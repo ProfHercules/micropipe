@@ -1,12 +1,12 @@
 import asyncio
-import logging
 from typing import Awaitable, Callable, Generic, Literal, Optional, TypeVar
 
 import aiohttp
 from aiohttp import ClientResponse, ClientSession
-from micropipe.base_stage import PipelineStage
+
 from micropipe.exceptions import PipelineException
-from micropipe.types import FlowValue, MetaFunc
+from micropipe.stage.base import BaseStage
+from micropipe.types import FlowValue
 
 O = TypeVar("O")  # output
 
@@ -23,7 +23,7 @@ HTTP_METHOD = Literal[
 ]
 
 
-class ApiCall(Generic[O], PipelineStage[str, O]):
+class ApiCallStage(Generic[O], BaseStage[str, O]):
     __method: HTTP_METHOD
     __decode_func: Callable[[ClientResponse], Awaitable[O]]
     __session: Optional[ClientSession]
@@ -37,10 +37,9 @@ class ApiCall(Generic[O], PipelineStage[str, O]):
         retry_limit: int = 5,
         retry_timout_sec: int = 15,
         session: Optional[ClientSession] = None,
-        meta_func: Optional[MetaFunc] = None,
-        logger: Optional[logging.Logger] = None,
+        **kwargs,
     ):
-        super().__init__(meta_func=meta_func, logger=logger)
+        super(ApiCallStage, self).__init__(**kwargs)
         self.__method = method
         self.__decode_func = decode_func
         self.__retry_limit = retry_limit
