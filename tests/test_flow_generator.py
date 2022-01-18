@@ -10,4 +10,4 @@ def test_flow_generator():
     assert gen._output_queue.get_nowait() == FlowValue(2)
     assert gen._output_queue.get_nowait() == FlowValue(3)
 
-    assert isinstance(gen._output_queue.get_nowait(), EndFlow)
+    assert gen._output_queue.get_nowait() == EndFlow()
