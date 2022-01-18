@@ -45,7 +45,3 @@ class FlowValue(Generic[T]):
             )
         except:
             return "Cannot dump value to JSON"
-
-
-# type alias dependant on above classes
-FlowQueue = Queue[Union[FlowValue[T], EndFlow]]

@@ -2,19 +2,19 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from typing import Any, Dict, Generic, List, Optional, TypeVar
+from typing import Any, Dict, Generic, List, Optional, TypeVar, Union
 
 from tqdm.asyncio import tqdm
 
-from micropipe.types import EndFlow, FlowQueue, FlowValue, MetaFunc
+from micropipe.types import EndFlow, FlowValue, MetaFunc
 
 I = TypeVar("I")  # input
 O = TypeVar("O")  # output
 
 
 class BaseStage(Generic[I, O]):
-    _input_queue: FlowQueue[I]
-    _output_queue: FlowQueue[O]
+    _input_queue: asyncio.Queue[Union[FlowValue[I], EndFlow]]
+    _output_queue: asyncio.Queue[Union[FlowValue[O], EndFlow]]
     _meta_func: Optional[MetaFunc]
     _logger: logging.Logger
 
