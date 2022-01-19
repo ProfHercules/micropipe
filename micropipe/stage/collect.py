@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Generic, List, TypeVar, Union
+from typing import Generic, List, Optional, TypeVar, Union
 
 from diskcache import Deque
 
@@ -30,8 +30,18 @@ class CollectListStage(Generic[I], BaseStage[I, List[I]]):
 
 
 class CollectDequeStage(Generic[I], BaseStage[I, Deque]):
+    __cache_directory: Optional[str]
+
+    def __init__(
+        self,
+        cache_directory: Optional[str] = None,
+        **kwargs,
+    ):
+        super(CollectDequeStage, self).__init__(**kwargs)
+        self.__cache_directory = cache_directory
+
     async def _flow(self) -> None:
-        cache = Deque()
+        cache = Deque(directory=self.__cache_directory)
 
         while True:
             v: Union[FlowValue, EndFlow] = await self._input_queue.get()
