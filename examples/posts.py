@@ -1,3 +1,16 @@
+"""Simple pipeline that pulls posts from the https://jsonplaceholder.typicode.com/posts endpoint
+and saves it in a pandas DataFrame.
+
+Equivalent code without the use of micropipe:
+
+---
+import pandas as pd
+
+df = pd.read_json("https://jsonplaceholder.typicode.com/posts")
+df.to_csv("posts_clean.csv")
+print(df)
+---
+"""
 import pandas as pd
 
 from micropipe import Pipeline, stage
@@ -9,7 +22,7 @@ pipeline = Pipeline(
         stage.FlowGenerator(value=["https://jsonplaceholder.typicode.com/posts"]),
         # actually call the API, using the default GET method,
         # once we have a response decode it using resp.json()
-        stage.ApiCall(decode_func=lambda resp: resp.json()),
+        stage.ApiCall(lambda resp: resp.json()),
         # transform the list of posts into a pandas dataframe
         stage.Transform(lambda fv: pd.DataFrame(fv.value)),
         # use a passthrough stage to write the DF to a csv file
