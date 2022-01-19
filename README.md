@@ -4,6 +4,8 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![codecov](https://codecov.io/gh/ProfHercules/micropipe/branch/main/graph/badge.svg?token=G1DZ9BWUWK)](https://codecov.io/gh/ProfHercules/micropipe)
 [![CI](https://github.com/ProfHercules/micropipe/actions/workflows/codecov.yml/badge.svg?branch=main&event=push)](https://github.com/ProfHercules/micropipe/actions/workflows/codecov.yml)
+![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/profhercules/micropipe)
+![GitHub last commit](https://img.shields.io/github/last-commit/profhercules/micropipe)
 
 A micro data pipeline tool to help rapidly prototype local data workflows when working on hobby projects and whatnot.
 
