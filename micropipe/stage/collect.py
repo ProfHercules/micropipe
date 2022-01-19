@@ -10,7 +10,7 @@ from micropipe.types import EndFlow, FlowValue
 I = TypeVar("I")  # input
 
 
-class CollectListStage(Generic[I], BaseStage[I, List[I]]):
+class CollectList(Generic[I], BaseStage[I, List[I]]):
     async def _flow(self) -> None:
         output: List[I] = []
 
@@ -29,7 +29,7 @@ class CollectListStage(Generic[I], BaseStage[I, List[I]]):
         await self._output_queue.put(EndFlow())
 
 
-class CollectDequeStage(Generic[I], BaseStage[I, Deque]):
+class CollectDeque(Generic[I], BaseStage[I, Deque]):
     __cache_directory: Optional[str]
 
     def __init__(
@@ -37,7 +37,7 @@ class CollectDequeStage(Generic[I], BaseStage[I, Deque]):
         cache_directory: Optional[str] = None,
         **kwargs,
     ):
-        super(CollectDequeStage, self).__init__(**kwargs)
+        super(CollectDeque, self).__init__(**kwargs)
         self.__cache_directory = cache_directory
 
     async def _flow(self) -> None:

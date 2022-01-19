@@ -1,13 +1,13 @@
 import diskcache
 import pytest
 
-from micropipe import CollectDequeStage, CollectListStage
+from micropipe import CollectDeque, CollectList
 from micropipe.types import EndFlow, FlowValue
 
 
 @pytest.mark.asyncio
 async def test_collect_list():
-    stage = CollectListStage()
+    stage = CollectList()
     for i in range(10):
         stage._input_queue.put_nowait(FlowValue(i))
     stage._input_queue.put_nowait(EndFlow())
@@ -21,7 +21,7 @@ async def test_collect_list():
 
 @pytest.mark.asyncio
 async def test_collect_deque():
-    stage = CollectDequeStage()
+    stage = CollectDeque()
     for i in range(10):
         stage._input_queue.put_nowait(FlowValue(i))
     stage._input_queue.put_nowait(EndFlow())

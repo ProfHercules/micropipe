@@ -8,7 +8,7 @@ from micropipe.types import EndFlow
 I = TypeVar("I")  # input
 
 
-class FlowGeneratorStage(Generic[I], BaseStage[None, I]):
+class FlowGenerator(Generic[I], BaseStage[None, I]):
     __value: Union[Iterable[I], AsyncIterable[I]]
 
     def __init__(
@@ -16,7 +16,7 @@ class FlowGeneratorStage(Generic[I], BaseStage[None, I]):
         value: Union[Iterable[I], AsyncIterable[I]],
         **kwargs,
     ):
-        super(FlowGeneratorStage, self).__init__(**kwargs)
+        super(FlowGenerator, self).__init__(**kwargs)
         self.__value = value
 
     async def _flow(self) -> None:

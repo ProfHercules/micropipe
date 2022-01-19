@@ -10,7 +10,7 @@ from micropipe.types import FlowValue
 I = TypeVar("I")  # input
 
 
-class UrlGeneratorStage(Generic[I], BaseStage[I, str]):
+class UrlGenerator(Generic[I], BaseStage[I, str]):
     __template_url: str
     __params: Callable[[FlowValue[I]], Dict[str, str]]
 
@@ -20,7 +20,7 @@ class UrlGeneratorStage(Generic[I], BaseStage[I, str]):
         params: Callable[[FlowValue[I]], Dict[str, str]],
         **kwargs,
     ):
-        super(UrlGeneratorStage, self).__init__(**kwargs)
+        super(UrlGenerator, self).__init__(**kwargs)
         self.__template_url = template_url
         self.__params = params
 

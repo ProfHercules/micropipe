@@ -2,14 +2,14 @@ from typing import Dict
 
 import pytest
 
-from micropipe import EndFlow, FlowValue, PassthroughStage
+from micropipe import EndFlow, FlowValue, Passthrough
 from micropipe.stage.passthrough import CopyMode
 
 
 # CopyMode.NONE means the object can be modified by Passthrough func
 @pytest.mark.asyncio
 async def test_passthrough_no_copy_modify():
-    stage = PassthroughStage[Dict[str, str]](
+    stage = Passthrough[Dict[str, str]](
         lambda x: x.value.__setitem__("foo", "bar"),
         copy_mode=CopyMode.NONE,
     )
@@ -31,7 +31,7 @@ async def test_passthrough_no_copy_modify():
 async def test_passthrough_shallow_copy_shallow_modify():
     original, modified = {"foo": "bar"}, {"foo": "baz"}
 
-    stage = PassthroughStage[Dict[str, str]](
+    stage = Passthrough[Dict[str, str]](
         lambda x: x.__setattr__("value", modified),
         copy_mode=CopyMode.SHALLOW,
     )
@@ -53,7 +53,7 @@ async def test_passthrough_shallow_copy_shallow_modify():
 async def test_passthrough_shallow_copy_deep_modify():
     original = {"foo": {}}
 
-    stage = PassthroughStage[Dict[str, dict]](
+    stage = Passthrough[Dict[str, dict]](
         lambda x: x.value["foo"].__setitem__("bar", "baz"),
         copy_mode=CopyMode.SHALLOW,
     )
@@ -75,7 +75,7 @@ async def test_passthrough_shallow_copy_deep_modify():
 async def test_passthrough_deep_copy_deep_modify():
     original = {"foo": {}}
 
-    stage = PassthroughStage[Dict[str, dict]](
+    stage = Passthrough[Dict[str, dict]](
         lambda x: x.value["foo"].__setitem__("bar", "baz"),
         copy_mode=CopyMode.DEEP,
     )

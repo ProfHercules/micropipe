@@ -1,12 +1,12 @@
 import pytest
 from async_timeout import asyncio
 
-from micropipe import EndFlow, FlowGeneratorStage, FlowValue
+from micropipe import EndFlow, FlowGenerator, FlowValue
 
 
 @pytest.mark.asyncio
 async def test_flow_generator_single():
-    gen = FlowGeneratorStage(value=["foo"])
+    gen = FlowGenerator(value=["foo"])
     await gen._flow()
 
     assert gen._output_queue.get_nowait() == FlowValue("foo")
@@ -15,7 +15,7 @@ async def test_flow_generator_single():
 
 @pytest.mark.asyncio
 async def test_flow_generator_multi():
-    gen = FlowGeneratorStage(value=["foo", "bar", "baz"])
+    gen = FlowGenerator(value=["foo", "bar", "baz"])
     await gen._flow()
 
     assert gen._output_queue.get_nowait() == FlowValue("foo")
@@ -31,7 +31,7 @@ async def test_flow_generator_async_multi():
             yield i
             await asyncio.sleep(0.1)
 
-    gen = FlowGeneratorStage(value=gen_nums(3))
+    gen = FlowGenerator(value=gen_nums(3))
     await gen._flow()
 
     assert gen._output_queue.qsize() == 4

@@ -1,12 +1,12 @@
 import pytest
 
-from micropipe import FlattenStage
+from micropipe import Flatten
 from micropipe.types import EndFlow, FlowValue
 
 
 @pytest.mark.asyncio
 async def test_flatten():
-    stage = FlattenStage()
+    stage = Flatten()
 
     stage._input_queue.put_nowait(FlowValue([i for i in range(10)]))
     stage._input_queue.put_nowait(EndFlow())

@@ -16,7 +16,7 @@ class CopyMode(Enum):
     NONE = 3
 
 
-class PassthroughStage(Generic[I], BaseStage[I, I]):
+class Passthrough(Generic[I], BaseStage[I, I]):
     __func: Callable[[FlowValue[I]], None]
     __copy_mode: CopyMode
 
@@ -26,7 +26,7 @@ class PassthroughStage(Generic[I], BaseStage[I, I]):
         copy_mode: CopyMode = CopyMode.NONE,
         **kwargs,
     ):
-        super(PassthroughStage, self).__init__(**kwargs)
+        super(Passthrough, self).__init__(**kwargs)
         self.__func = func
         self.__copy_mode = copy_mode
 

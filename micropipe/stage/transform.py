@@ -9,7 +9,7 @@ I = TypeVar("I")  # input
 O = TypeVar("O")  # output
 
 
-class TransformStage(Generic[I, O], BaseStage[I, O]):
+class Transform(Generic[I, O], BaseStage[I, O]):
     __transformer: Callable[[FlowValue[I]], O]
 
     def __init__(
@@ -17,7 +17,7 @@ class TransformStage(Generic[I, O], BaseStage[I, O]):
         transformer: Callable[[FlowValue[I]], O],
         **kwargs,
     ):
-        super(TransformStage, self).__init__(**kwargs)
+        super(Transform, self).__init__(**kwargs)
         self.__transformer = transformer
 
     async def _task_handler(self, flow_val: FlowValue[I]) -> bool:

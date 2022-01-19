@@ -1,9 +1,9 @@
-from .api_call import ApiCallStage
-from .collect import CollectDequeStage, CollectListStage
-from .filter import FilterStage
-from .flatten import FlattenStage
-from .flow_generator import FlowGeneratorStage
-from .passthrough import PassthroughStage
-from .rate_limit import RateLimitStage
-from .transform import TransformStage
-from .url_generator import UrlGeneratorStage
+from .api_call import ApiCall
+from .collect import CollectDeque, CollectList
+from .filter import Filter
+from .flatten import Flatten
+from .flow_generator import FlowGenerator
+from .passthrough import Passthrough
+from .rate_limit import RateLimit
+from .transform import Transform
+from .url_generator import UrlGenerator

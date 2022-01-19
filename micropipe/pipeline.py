@@ -7,7 +7,7 @@ from typing import List, Optional
 import coloredlogs
 from tqdm.asyncio import tqdm
 
-from micropipe.stage import FlowGeneratorStage
+from micropipe.stage import FlowGenerator
 from micropipe.stage.base import BaseStage
 
 
@@ -22,7 +22,7 @@ class Pipeline:
         logger: Optional[logging.Logger] = None,
     ):
         assert len(stages) > 0
-        assert isinstance(stages[0], FlowGeneratorStage)
+        assert isinstance(stages[0], FlowGenerator)
         self.stages = stages
         self.logger = logging.getLogger() if logger is None else logger
         self.tasks = []

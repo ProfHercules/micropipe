@@ -12,7 +12,7 @@ from micropipe.types import EndFlow
 I = TypeVar("I")  # input
 
 
-class RateLimitStage(Generic[I], BaseStage[I, I]):
+class RateLimit(Generic[I], BaseStage[I, I]):
     __max_per_sec: float
 
     def __init__(
@@ -21,7 +21,7 @@ class RateLimitStage(Generic[I], BaseStage[I, I]):
         concurrency_limit: int = 0,
         **kwargs,
     ):
-        super(RateLimitStage, self).__init__(**kwargs)
+        super(RateLimit, self).__init__(**kwargs)
         self.__max_per_sec = max_per_sec
         assert self.__max_per_sec > 0.0
 

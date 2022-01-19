@@ -8,7 +8,7 @@ from micropipe.types import FlowValue
 I = TypeVar("I")  # input
 
 
-class FilterStage(Generic[I], BaseStage[I, I]):
+class Filter(Generic[I], BaseStage[I, I]):
     __should_keep: Callable[[FlowValue[I]], bool]
 
     def __init__(
@@ -16,7 +16,7 @@ class FilterStage(Generic[I], BaseStage[I, I]):
         should_keep: Callable[[FlowValue[I]], bool],
         **kwargs,
     ):
-        super(FilterStage, self).__init__(**kwargs)
+        super(Filter, self).__init__(**kwargs)
         self.__should_keep = should_keep
 
     async def _task_handler(self, flow_val: FlowValue[I]) -> bool:

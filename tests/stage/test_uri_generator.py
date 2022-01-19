@@ -1,12 +1,12 @@
 import pytest
 
-from micropipe import UrlGeneratorStage
+from micropipe import UrlGenerator
 from micropipe.types import EndFlow, FlowValue
 
 
 @pytest.mark.asyncio
 async def test_uri_generator():
-    stage = UrlGeneratorStage(
+    stage = UrlGenerator(
         template_url="https://jsonplaceholder.typicode.com/users/{id}",
         params=lambda id: {"id": str(id.value)},
     )
