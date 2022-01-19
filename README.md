@@ -11,7 +11,9 @@ A micro data pipeline tool to help rapidly prototype local data workflows when w
 
 # TODO
 
-- [ ] Add examples
+- [ ] Improve parallelization (currently we only use asyncio)
+- [ ] Add more complex examples
 - [ ] Add documentation
 - [ ] Add integration tests various combinations of stages
 - [x] Add unit tests for every stage
+- [x] Add some basic examples
