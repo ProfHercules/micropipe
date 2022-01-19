@@ -1,23 +1,23 @@
-import logging
+import pytest
 
-from micropipe import FlowGeneratorStage, Pipeline, UrlGeneratorStage
+from micropipe import UrlGeneratorStage
+from micropipe.types import EndFlow, FlowValue
 
 
-def test_uri_generator():
-    ids = list(range(1, 11))
+@pytest.mark.asyncio
+async def test_uri_generator():
+    stage = UrlGeneratorStage(
+        template_url="https://jsonplaceholder.typicode.com/users/{id}",
+        params=lambda id: {"id": str(id.value)},
+    )
+    for i in range(10):
+        stage._input_queue.put_nowait(FlowValue(i))
+    stage._input_queue.put_nowait(EndFlow())
 
-    stages = [
-        FlowGeneratorStage(iterator=ids),
-        UrlGeneratorStage(
-            template_url="https://jsonplaceholder.typicode.com/users/{id}",
-            params=lambda id: {"id": str(id.value)},
-        ),
-    ]
-    pipeline = Pipeline(stages=stages, logger=logging.getLogger())
-    result = pipeline.flow_sync()
-    urls = list(map(lambda r: r.value, result))
+    await stage._flow()
 
-    assert len(urls) == 10
+    assert stage._output_queue.qsize() == 11
 
-    for id in ids:
-        _ = urls.index(f"https://jsonplaceholder.typicode.com/users/{id}")
+    for id in range(10):
+        fv = stage._output_queue.get_nowait()
+        assert fv.value == f"https://jsonplaceholder.typicode.com/users/{id}"
