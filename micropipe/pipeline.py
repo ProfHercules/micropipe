@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from typing import List
+from typing import List, Optional
 
 import coloredlogs
 from tqdm.asyncio import tqdm
@@ -19,15 +19,15 @@ class Pipeline:
     def __init__(
         self,
         stages: List[BaseStage],
-        logger: logging.Logger,
+        logger: Optional[logging.Logger] = None,
     ):
         assert len(stages) > 0
         assert isinstance(stages[0], FlowGeneratorStage)
         self.stages = stages
-        self.logger = logger
+        self.logger = logging.getLogger() if logger is None else logger
         self.tasks = []
 
-        coloredlogs.install(level=logger.level, logger=logger)
+        coloredlogs.install(level=self.logger.level, logger=logger)
 
     async def flow(self):
         self.logger.info(f"[Pipeline] Starting flow with {len(self.stages)} stages")
