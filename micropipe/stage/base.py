@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from typing import Any, Dict, Generic, List, Optional, TypeVar, Union
+from typing import Any, Generic, List, Optional, TypeVar, Union
 
 from tqdm.asyncio import tqdm
 
-from micropipe.types import EndFlow, FlowValue, MetaFunc
+from micropipe.types import EndFlow, FlowValue, MetaData, MetaFunc
 
 I = TypeVar("I")  # input
 O = TypeVar("O")  # output
@@ -47,7 +47,7 @@ class BaseStage(Generic[I, O]):
         self._input_queue = prev_stage._output_queue
         return asyncio.create_task(self._flow())
 
-    def _wrap_flow_value(self, out_val: O, meta: Dict[str, Any]) -> FlowValue[O]:
+    def _wrap_flow_value(self, out_val: O, meta: MetaData = {}) -> FlowValue[O]:
         if self._meta_func:
             meta = self._meta_func(out_val, meta)
         return FlowValue(out_val, meta)

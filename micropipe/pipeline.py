@@ -32,6 +32,9 @@ class Pipeline:
     async def flow(self):
         self.logger.info(f"[Pipeline] Starting flow with {len(self.stages)} stages")
 
+        flow_gen_task = asyncio.create_task(self.stages[0]._flow())
+        self.tasks.append(flow_gen_task)
+
         for i in range(1, len(self.stages)):
             task = self.stages[i]._connect(self.stages[i - 1])
             self.tasks.append(task)
