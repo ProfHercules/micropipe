@@ -6,40 +6,6 @@
     4. Then combined the acount_id with the match_history data
     5. And saves it to a csv file (so the 2 dataframes could be joined on account_id)
 
-
-Equivalent code without the use of micropipe:
-
----
-import pandas as pd
-import requests
-
-# get the list of pro players from the api
-base_url = "https://api.opendota.com/api"
-data = requests.get(f"{base_url}/proPlayers")
-
-# turn it into a dataframe and save as csv
-players = pd.DataFrame(data.json())
-players.to_csv("pro_players.csv", index=False)
-
-# extract a list of account ids and turn it into a list of tuple of 
-# (account_id, url) pairs
-account_ids = players["account_id"].astype(str).tolist()[:10]
-account_id_urls = [
-    (account_id, f"{base_url}/players/{account_id}/matches")
-    for account_id in account_ids
-]
-
-# for each pair in the previous list get the match history, add 
-# account_id column, and add the resulting df to our list of dfs
-dfs = []
-for account_id, url in account_id_urls:
-    df = pd.DataFrame(requests.get(url).json())
-    df.assign(account_id=account_id)
-    dfs.append(df)
-
-# concat the entire list of dataframes and save as csv
-pd.concat(dfs).to_csv("pro_matches.csv", index=False)
----
 """
 import pandas as pd
 

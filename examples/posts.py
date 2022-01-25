@@ -1,15 +1,6 @@
 """Simple pipeline that pulls posts from the https://jsonplaceholder.typicode.com/posts endpoint
 and saves it in a pandas DataFrame.
 
-Equivalent code without the use of micropipe:
-
----
-import pandas as pd
-
-df = pd.read_json("https://jsonplaceholder.typicode.com/posts")
-df.to_csv("posts_clean.csv")
-print(df)
----
 """
 import pandas as pd
 
