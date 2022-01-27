@@ -1,7 +1,7 @@
 import diskcache
 import pytest
 
-from micropipe import CollectDeque, CollectList
+from micropipe.stages import CollectDeque, CollectList
 from micropipe.types import EndFlow, FlowValue
 
 

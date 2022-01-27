@@ -1,6 +1,6 @@
 import pytest
 
-from micropipe import UrlGenerator
+from micropipe.stages import UrlGenerator
 from micropipe.types import EndFlow, FlowValue
 
 

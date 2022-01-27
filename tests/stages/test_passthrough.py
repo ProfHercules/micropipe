@@ -2,8 +2,9 @@ from typing import Dict
 
 import pytest
 
-from micropipe import EndFlow, FlowValue, Passthrough
-from micropipe.stage.passthrough import CopyMode
+from micropipe.stages import Passthrough
+from micropipe.stages.passthrough import CopyMode
+from micropipe.types import EndFlow, FlowValue
 
 
 # CopyMode.NONE means the object can be modified by Passthrough func

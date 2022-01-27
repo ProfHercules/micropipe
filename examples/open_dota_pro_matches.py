@@ -9,44 +9,44 @@
 """
 import pandas as pd
 
-from micropipe import Pipeline, stage
+from micropipe import Pipeline, stages
 
 # create a pipeline
 pipeline = Pipeline(
     stages=[
         # inject the proPlayers endpoint to start flow
-        stage.FlowGenerator(value=["https://api.opendota.com/api/proPlayers"]),
+        stages.FlowGenerator(value=["https://api.opendota.com/api/proPlayers"]),
         # call the endpoint and turn to response into json
-        stage.ApiCall(lambda resp: resp.json()),
+        stages.ApiCall(lambda resp: resp.json()),
         # transform the json response into a dataframe
-        stage.Transform(lambda fv: pd.DataFrame(fv.value)),
+        stages.Transform(lambda fv: pd.DataFrame(fv.value)),
         # save dataframe as csv file
-        stage.Passthrough(lambda fv: fv.value.to_csv("pro_players.csv", index=False)),
+        stages.Passthrough(lambda fv: fv.value.to_csv("pro_players.csv", index=False)),
         # extract just the account_id's
-        stage.Transform(lambda fv: fv.value["account_id"].astype(str).tolist()[:10]),
+        stages.Transform(lambda fv: fv.value["account_id"].astype(str).tolist()[:10]),
         # flatten the list of account ids so we can work with each individually
         # also add the account_id to meta_data so we can keep track of it
-        stage.Flatten(meta_func=lambda acc_id, _: {"account_id": acc_id}),
+        stages.Flatten(meta_func=lambda acc_id, _: {"account_id": acc_id}),
         # generate urls to call using the previously flattened list of account_ids
-        stage.UrlGenerator(
+        stages.UrlGenerator(
             template_url="https://api.opendota.com/api/players/{account_id}/matches",
             params=lambda fv: {"account_id": fv.value},
         ),
         # rate limit to 1 per sec (60 per min) as OpenDota requires
-        stage.RateLimit(max_per_sec=1),
+        stages.RateLimit(max_per_sec=1),
         # call the endpoints
-        stage.ApiCall(lambda r: r.json()),
+        stages.ApiCall(lambda r: r.json()),
         # turn list of matches into a df
-        stage.Transform(lambda fv: pd.DataFrame(fv.value)),
+        stages.Transform(lambda fv: pd.DataFrame(fv.value)),
         # assign account_id column from meta_data
-        stage.Transform(lambda fv: fv.value.assign(account_id=fv.meta["account_id"])),
+        stages.Transform(lambda fv: fv.value.assign(account_id=fv.meta["account_id"])),
         # collect the dataframes into a list of dataframes using CollectDeque
         # which stores the list in a local disk cache, so we don't use too much memory
-        stage.CollectDeque(),
+        stages.CollectDeque(),
         # concat the list of dataframes into a single dataframe
-        stage.Transform(lambda fv: pd.concat(fv.value)),
+        stages.Transform(lambda fv: pd.concat(fv.value)),
         # save the resulting dataframe to disk
-        stage.Passthrough(
+        stages.Passthrough(
             func=lambda fv: fv.value.to_csv("pro_matches.csv", index=False),
         ),
     ]

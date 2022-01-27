@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import AsyncIterable, Generic, Iterable, TypeVar, Union
 
-from micropipe.stage.base import BaseStage
+from micropipe.stages.base import BaseStage
 from micropipe.types import EndFlow
 
 I = TypeVar("I")  # input
 
 
-class FlowGenerator(Generic[I], BaseStage[None, I]):
+class FlowGenerator(BaseStage[None, I], Generic[I]):
     __value: Union[Iterable[I], AsyncIterable[I]]
 
     def __init__(

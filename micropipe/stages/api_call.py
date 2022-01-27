@@ -7,7 +7,7 @@ import aiohttp
 from aiohttp import ClientResponse, ClientSession
 
 from micropipe.exceptions import PipelineException
-from micropipe.stage.base import BaseStage
+from micropipe.stages.base import BaseStage
 from micropipe.types import FlowValue
 
 O = TypeVar("O")  # output
@@ -25,7 +25,7 @@ HTTP_METHOD = Literal[
 ]
 
 
-class ApiCall(Generic[O], BaseStage[str, O]):
+class ApiCall(BaseStage[str, O], Generic[O]):
     __method: HTTP_METHOD
     __decode_func: Callable[[ClientResponse], Awaitable[O]]
     __session: Optional[ClientSession]

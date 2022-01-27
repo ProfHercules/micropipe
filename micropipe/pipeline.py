@@ -7,8 +7,8 @@ from typing import List, Optional
 import coloredlogs
 from tqdm.asyncio import tqdm
 
-from micropipe.stage import FlowGenerator
-from micropipe.stage.base import BaseStage
+from micropipe.stages import FlowGenerator
+from micropipe.stages.base import BaseStage
 
 
 class Pipeline:

@@ -1,22 +1,15 @@
 from __future__ import annotations
 
 from copy import copy, deepcopy
-from enum import Enum
 from typing import Callable, Generic, TypeVar
 
-from micropipe.stage.base import BaseStage
-from micropipe.types import FlowValue
+from micropipe.stages.base import BaseStage
+from micropipe.types import CopyMode, FlowValue
 
 I = TypeVar("I")  # input
 
 
-class CopyMode(Enum):
-    SHALLOW = 1
-    DEEP = 2
-    NONE = 3
-
-
-class Passthrough(Generic[I], BaseStage[I, I]):
+class Passthrough(BaseStage[I, I], Generic[I]):
     __func: Callable[[FlowValue[I]], None]
     __copy_mode: CopyMode
 

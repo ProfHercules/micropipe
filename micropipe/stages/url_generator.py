@@ -4,13 +4,13 @@ import re
 import urllib.parse
 from typing import Callable, Dict, Generic, TypeVar
 
-from micropipe.stage.base import BaseStage
+from micropipe.stages.base import BaseStage
 from micropipe.types import FlowValue
 
 I = TypeVar("I")  # input
 
 
-class UrlGenerator(Generic[I], BaseStage[I, str]):
+class UrlGenerator(BaseStage[I, str], Generic[I]):
     __template_url: str
     __params: Callable[[FlowValue[I]], Dict[str, str]]
 

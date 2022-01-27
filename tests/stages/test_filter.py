@@ -1,6 +1,6 @@
 import pytest
 
-from micropipe import Filter
+from micropipe.stages import Filter
 from micropipe.types import EndFlow, FlowValue
 
 

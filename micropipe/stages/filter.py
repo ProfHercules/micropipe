@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import Callable, Generic, TypeVar
 
-from micropipe.stage.base import BaseStage
+from micropipe.stages.base import BaseStage
 from micropipe.types import FlowValue
 
 I = TypeVar("I")  # input
 
 
-class Filter(Generic[I], BaseStage[I, I]):
+class Filter(BaseStage[I, I], Generic[I]):
     __should_keep: Callable[[FlowValue[I]], bool]
 
     def __init__(

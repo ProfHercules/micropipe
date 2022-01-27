@@ -1,7 +1,8 @@
 import pytest
 from async_timeout import asyncio
 
-from micropipe import EndFlow, FlowGenerator, FlowValue
+from micropipe.stages import FlowGenerator
+from micropipe.types import EndFlow, FlowValue
 
 
 @pytest.mark.asyncio

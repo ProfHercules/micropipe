@@ -4,20 +4,20 @@ and saves it in a pandas DataFrame.
 """
 import pandas as pd
 
-from micropipe import Pipeline, stage
+from micropipe import Pipeline, stages
 
 # create a pipeline
 pipeline = Pipeline(
     stages=[
         # generate some 'flow' by injecting the URL for the API we want to call
-        stage.FlowGenerator(value=["https://jsonplaceholder.typicode.com/posts"]),
+        stages.FlowGenerator(value=["https://jsonplaceholder.typicode.com/posts"]),
         # actually call the API, using the default GET method,
         # once we have a response decode it using resp.json()
-        stage.ApiCall(lambda resp: resp.json()),
+        stages.ApiCall(lambda resp: resp.json()),
         # transform the list of posts into a pandas dataframe
-        stage.Transform(lambda fv: pd.DataFrame(fv.value)),
+        stages.Transform(lambda fv: pd.DataFrame(fv.value)),
         # use a passthrough stage to write the DF to a csv file
-        stage.Passthrough(lambda fv: fv.value.to_csv("posts.csv")),
+        stages.Passthrough(lambda fv: fv.value.to_csv("posts.csv")),
     ]
 )
 

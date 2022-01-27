@@ -1,6 +1,6 @@
 import pytest
 
-from micropipe import RateLimit
+from micropipe.stages import RateLimit
 
 
 def test_rate_limit():

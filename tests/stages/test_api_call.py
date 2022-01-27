@@ -2,7 +2,7 @@ import aiohttp
 import pytest
 from aioresponses import aioresponses
 
-from micropipe import ApiCall
+from micropipe.stages import ApiCall
 from micropipe.types import EndFlow, FlowValue
 
 
