@@ -15,7 +15,7 @@ from micropipe import Pipeline, stages
 pipeline = Pipeline(
     stages=[
         # call the endpoint and turn to response into json
-        stages.ApiCall(lambda resp: resp.json()),
+        stages.Request(lambda resp: resp.json()),
         # transform the json response into a dataframe
         stages.Transform(lambda fv: pd.DataFrame(fv.value)),
         # save dataframe as csv file
@@ -33,7 +33,7 @@ pipeline = Pipeline(
         # rate limit to 1 per sec (60 per min) as OpenDota requires
         stages.RateLimit(max_per_sec=1),
         # call the endpoints
-        stages.ApiCall(lambda r: r.json()),
+        stages.Request(lambda r: r.json()),
         # turn list of matches into a df
         stages.Transform(lambda fv: pd.DataFrame(fv.value)),
         # assign account_id column from meta_data

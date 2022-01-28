@@ -1,6 +1,5 @@
 import math
 
-import pandas as pd
 
 from micropipe import Pipeline, stages
 
@@ -18,7 +17,7 @@ def basic_example():
         ]
     )
 
-    lim = 100_000
+    lim = 10_000
 
     result = pipeline.pump(range(lim))
 

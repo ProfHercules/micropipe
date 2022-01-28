@@ -11,7 +11,7 @@ pipeline = Pipeline(
     stages=[
         # actually call the API, using the default GET method,
         # once we have a response decode it using resp.json()
-        stages.ApiCall(lambda resp: resp.json()),
+        stages.Request(lambda resp: resp.json()),
         # transform the list of posts into a pandas dataframe
         stages.Transform(lambda fv: pd.DataFrame(fv.value)),
         # use a passthrough stage to write the DF to a csv file

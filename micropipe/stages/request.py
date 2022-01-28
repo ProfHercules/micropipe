@@ -25,7 +25,7 @@ HTTP_METHOD = Literal[
 ]
 
 
-class ApiCall(BaseStage[str, O], Generic[O]):
+class Request(BaseStage[str, O], Generic[O]):
     __method: HTTP_METHOD
     __decode_func: Callable[[ClientResponse], Awaitable[O]]
     __session: Optional[ClientSession]
@@ -41,7 +41,7 @@ class ApiCall(BaseStage[str, O], Generic[O]):
         session: Optional[ClientSession] = None,
         **kwargs,
     ):
-        super(ApiCall, self).__init__(**kwargs)
+        super(Request, self).__init__(**kwargs)
         self.__method = method
         self.__decode_func = decode_func
         self.__retry_limit = retry_limit
