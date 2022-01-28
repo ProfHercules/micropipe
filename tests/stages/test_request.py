@@ -2,14 +2,14 @@ import aiohttp
 import pytest
 from aioresponses import aioresponses
 
-from micropipe import ApiCall
+from micropipe.stages import Request
 from micropipe.types import EndFlow, FlowValue
 
 
 @pytest.mark.asyncio
-async def test_api_call():
+async def test_request():
     session = aiohttp.ClientSession()
-    stage = ApiCall(decode_func=lambda resp: resp.json(), session=session)
+    stage = Request(decode_func=lambda resp: resp.json(), session=session)
 
     stage._input_queue.put_nowait(FlowValue("http://test.example.com"))
     stage._input_queue.put_nowait(EndFlow())

@@ -6,13 +6,13 @@ from typing import Generic, TypeVar
 
 from tqdm.asyncio import tqdm
 
-from micropipe.stage.base import BaseStage
+from micropipe.stages.base import BaseStage
 from micropipe.types import EndFlow
 
 I = TypeVar("I")  # input
 
 
-class RateLimit(Generic[I], BaseStage[I, I]):
+class RateLimit(BaseStage[I, I], Generic[I]):
     __max_per_sec: float
 
     def __init__(

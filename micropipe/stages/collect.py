@@ -4,13 +4,13 @@ from typing import Generic, List, Optional, TypeVar, Union
 
 from diskcache import Deque
 
-from micropipe.stage.base import BaseStage
+from micropipe.stages.base import BaseStage
 from micropipe.types import EndFlow, FlowValue
 
 I = TypeVar("I")  # input
 
 
-class CollectList(Generic[I], BaseStage[I, List[I]]):
+class CollectList(BaseStage[I, List[I]], Generic[I]):
     async def _flow(self) -> None:
         output: List[I] = []
 
@@ -29,7 +29,7 @@ class CollectList(Generic[I], BaseStage[I, List[I]]):
         await self._output_queue.put(EndFlow())
 
 
-class CollectDeque(Generic[I], BaseStage[I, Deque]):
+class CollectDeque(BaseStage[I, Deque], Generic[I]):
     __cache_directory: Optional[str]
 
     def __init__(

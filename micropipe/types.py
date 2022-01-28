@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-import json
-from asyncio import Queue
-from typing import Any, Callable, Dict, Generic, Optional, TypeVar, Union
+from enum import Enum
+from typing import Any, Callable, Dict, Generic, Optional, TypeVar
 
 T = TypeVar("T")
 O = TypeVar("O")
@@ -31,3 +30,9 @@ class FlowValue(Generic[T]):
             and __o.value == self.value
             and __o.meta == self.meta
         )
+
+
+class CopyMode(Enum):
+    SHALLOW = 1
+    DEEP = 2
+    NONE = 3

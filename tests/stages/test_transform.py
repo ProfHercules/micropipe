@@ -1,6 +1,6 @@
 import pytest
 
-from micropipe.stage.transform import Transform
+from micropipe.stages import Transform
 from micropipe.types import EndFlow, FlowValue
 
 

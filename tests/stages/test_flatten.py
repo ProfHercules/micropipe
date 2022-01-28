@@ -1,6 +1,6 @@
 import pytest
 
-from micropipe import Flatten
+from micropipe.stages import Flatten
 from micropipe.types import EndFlow, FlowValue
 
 

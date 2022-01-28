@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from typing import Callable, Generic, TypeVar
 
-from micropipe.stage.base import BaseStage
+from micropipe.stages.base import BaseStage
 from micropipe.types import FlowValue
 
 I = TypeVar("I")  # input
 O = TypeVar("O")  # output
 
 
-class Transform(Generic[I, O], BaseStage[I, O]):
+class Transform(BaseStage[I, O], Generic[I, O]):
     __transformer: Callable[[FlowValue[I]], O]
 
     def __init__(
