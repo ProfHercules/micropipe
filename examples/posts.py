@@ -9,8 +9,6 @@ from micropipe import Pipeline, stages
 # create a pipeline
 pipeline = Pipeline(
     stages=[
-        # generate some 'flow' by injecting the URL for the API we want to call
-        stages.FlowGenerator(value=["https://jsonplaceholder.typicode.com/posts"]),
         # actually call the API, using the default GET method,
         # once we have a response decode it using resp.json()
         stages.ApiCall(lambda resp: resp.json()),
@@ -23,8 +21,8 @@ pipeline = Pipeline(
 
 # let the pipeline 'flow' (sync means we don't have to worry about an event loop)
 # or 'awaiting' anything
-output = pipeline.flow_sync()
+output = pipeline.pump(["https://jsonplaceholder.typicode.com/posts"])
 
-# the output is a list of FlowValues (hence fv), print it for the sake of visualisation
+# the output is a list of FlowValues (hence fv), print it for the sake of visualization
 for fv in output:
     print(fv.value)

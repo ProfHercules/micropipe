@@ -14,8 +14,6 @@ from micropipe import Pipeline, stages
 # create a pipeline
 pipeline = Pipeline(
     stages=[
-        # inject the proPlayers endpoint to start flow
-        stages.FlowGenerator(value=["https://api.opendota.com/api/proPlayers"]),
         # call the endpoint and turn to response into json
         stages.ApiCall(lambda resp: resp.json()),
         # transform the json response into a dataframe
@@ -52,5 +50,4 @@ pipeline = Pipeline(
     ]
 )
 
-# or 'awaiting' anything
-pipeline.flow_sync()
+pipeline.pump(["https://api.opendota.com/api/proPlayers"])
