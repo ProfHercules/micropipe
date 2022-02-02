@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from abc import ABC, abstractmethod
 from typing import Any, Generic, List, Optional, TypeVar, Union
 
 from tqdm.asyncio import tqdm
@@ -12,7 +13,7 @@ I = TypeVar("I")  # input
 O = TypeVar("O")  # output
 
 
-class BaseStage(Generic[I, O]):
+class BaseStage(Generic[I, O], ABC):
     _input_queue: asyncio.Queue[Union[FlowValue[I], EndFlow]]
     _output_queue: asyncio.Queue[Union[FlowValue[O], EndFlow]]
     _meta_func: Optional[MetaFunc]
@@ -81,6 +82,7 @@ class BaseStage(Generic[I, O]):
 
         await self._output_queue.put(EndFlow())
 
+    @abstractmethod
     async def _task_handler(self, flow_val: FlowValue[I]) -> bool:
         ...
         raise NotImplementedError()  # default _task_handler should not be called
