@@ -1,18 +1,48 @@
 from __future__ import annotations
 
-from typing import Generic, List, Optional, TypeVar, Union
+from typing import (
+    Callable,
+    Generic,
+    List,
+    MutableSequence,
+    Optional,
+    Sequence,
+    TypeVar,
+    Union,
+)
 
 from diskcache import Deque
 
 from micropipe.stages.base import BaseStage
 from micropipe.types import EndFlow, FlowValue
+from micropipe.exceptions import PipelineException
 
 I = TypeVar("I")  # input
+# currently O may be 'Sequence' in the case of Deque
+O = TypeVar("O", bound=Union[Sequence, MutableSequence])  # input
 
 
-class CollectList(BaseStage[I, List[I]], Generic[I]):
+# --- abstract class defined here ---
+
+
+class _CollectBase(BaseStage[I, O], Generic[I, O]):
+    __new_batch: Callable[[], O]
+    _batch_size: int
+
+    def __init__(
+        self,
+        new_batch: Callable[[], O],
+        batch_size: int = 0,
+        **kwargs,
+    ):
+        super(_CollectBase, self).__init__(**kwargs)
+        if batch_size == 1:
+            raise PipelineException("A batch size of 1 is pointless")
+        self.__new_batch = new_batch
+        self._batch_size = batch_size
+
     async def _flow(self) -> None:
-        output: List[I] = []
+        batch = self.__new_batch()
 
         while True:
             v = await self._input_queue.get()
@@ -20,39 +50,46 @@ class CollectList(BaseStage[I, List[I]], Generic[I]):
             if isinstance(v, EndFlow):
                 break
             # else
-            output.append(v.value)
+            batch.append(v.value)
 
-        self._logger.info("[%s] Output list complete", self.name)
-        out = FlowValue(output)
+            # 0 means we never execute this branch, since
+            # len(batch) > 0 (always)
+            if len(batch) == self._batch_size:
+                await self._output_queue.put(FlowValue(batch))
+                batch = self.__new_batch()
 
-        await self._output_queue.put(out)
+        if len(batch) > 0:
+            await self._output_queue.put(FlowValue(batch))
+
+        self._logger.info("[%s] Collect complete", self.name)
+
         await self._output_queue.put(EndFlow())
 
+    async def _task_handler(self, flow_val: FlowValue[I]) -> bool:
+        pass
 
-class CollectDeque(BaseStage[I, Deque], Generic[I]):
-    __cache_directory: Optional[str]
 
+# -- concrete classes below here ---
+
+
+class CollectList(_CollectBase[I, List[I]], Generic[I]):
+    def __init__(self, batch_size: int = 0, **kwargs):
+        super(CollectList, self).__init__(
+            lambda: [],
+            batch_size,
+            **kwargs,
+        )
+
+
+class CollectDeque(_CollectBase[I, Deque], Generic[I]):
     def __init__(
         self,
+        batch_size: int = 0,
         cache_directory: Optional[str] = None,
         **kwargs,
     ):
-        super(CollectDeque, self).__init__(**kwargs)
-        self.__cache_directory = cache_directory
-
-    async def _flow(self) -> None:
-        cache = Deque(directory=self.__cache_directory)
-
-        while True:
-            v: Union[FlowValue, EndFlow] = await self._input_queue.get()
-
-            if isinstance(v, EndFlow):
-                break
-            # else
-            cache.append(v.value)
-
-        self._logger.info("[%s] Deque collection completed", self.name)
-        out = FlowValue(cache)
-
-        await self._output_queue.put(out)
-        await self._output_queue.put(EndFlow())
+        super(CollectDeque, self).__init__(
+            lambda: Deque(directory=cache_directory),
+            batch_size,
+            **kwargs,
+        )
