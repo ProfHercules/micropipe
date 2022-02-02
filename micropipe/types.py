@@ -36,3 +36,8 @@ class CopyMode(Enum):
     SHALLOW = 1
     DEEP = 2
     NONE = 3
+
+
+class RowFlowType(Enum):
+    EACH_ROW = 1  # inject individual flow values for each row
+    ALL_ROWS = 2  # inject all rows as a single flow value
