@@ -15,7 +15,7 @@ pipeline = Pipeline(
         # transform the list of posts into a pandas dataframe
         stages.Transform(lambda fv: pd.DataFrame(fv.value)),
         # use a passthrough stage to write the DF to a csv file
-        stages.Passthrough(lambda fv: fv.value.to_csv("posts.csv")),
+        stages.Passthrough(lambda fv: fv.value.to_csv("posts.csv", index=False)),
     ]
 )
 
