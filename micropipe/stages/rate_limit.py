@@ -7,7 +7,7 @@ from typing import Generic, TypeVar
 from tqdm.asyncio import tqdm
 
 from micropipe.stages.base import BaseStage
-from micropipe.types import EndFlow
+from micropipe.types import EndFlow, FlowValue
 
 I = TypeVar("I")  # input
 
@@ -51,3 +51,6 @@ class RateLimit(BaseStage[I, I], Generic[I]):
             await self._output_queue.put(value)
 
         await self._output_queue.put(EndFlow())
+
+    async def _task_handler(self, flow_val: FlowValue[I]) -> bool:
+        pass

@@ -20,6 +20,21 @@ async def test_collect_list():
 
 
 @pytest.mark.asyncio
+async def test_collect_list_batch_size():
+    stage = CollectList(batch_size=5)
+    for i in range(10):
+        stage._input_queue.put_nowait(FlowValue(i))
+    stage._input_queue.put_nowait(EndFlow())
+
+    await stage._flow()
+
+    assert stage._output_queue.qsize() == 3
+    assert stage._output_queue.get_nowait() == FlowValue([i for i in range(5)])
+    assert stage._output_queue.get_nowait() == FlowValue([i for i in range(5, 10)])
+    assert stage._output_queue.get_nowait() == EndFlow()
+
+
+@pytest.mark.asyncio
 async def test_collect_deque():
     stage = CollectDeque()
     for i in range(10):
@@ -34,3 +49,29 @@ async def test_collect_deque():
     assert len(val.value) == 10
     assert val.value.peek() == 9
     assert val.value.peekleft() == 0
+
+
+@pytest.mark.asyncio
+async def test_collect_deque_batch_size():
+    stage = CollectDeque(batch_size=5)
+    for i in range(10):
+        stage._input_queue.put_nowait(FlowValue(i))
+    stage._input_queue.put_nowait(EndFlow())
+
+    await stage._flow()
+
+    assert stage._output_queue.qsize() == 3
+
+    # first batch
+    val = stage._output_queue.get_nowait()
+    assert isinstance(val.value, diskcache.Deque)
+    assert len(val.value) == 5
+    assert val.value.peek() == 4
+    assert val.value.peekleft() == 0
+
+    # second batch
+    val = stage._output_queue.get_nowait()
+    assert isinstance(val.value, diskcache.Deque)
+    assert len(val.value) == 5
+    assert val.value.peek() == 9
+    assert val.value.peekleft() == 5
