@@ -13,9 +13,9 @@ from typing import (
 
 from diskcache import Deque
 
+from micropipe.exceptions import PipelineException
 from micropipe.stages.base import BaseStage
 from micropipe.types import EndFlow, FlowValue
-from micropipe.exceptions import PipelineException
 
 I = TypeVar("I")  # input
 # currently O may be 'Sequence' in the case of Deque

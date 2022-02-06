@@ -4,19 +4,18 @@ classifiers = [
   "Programming Language :: Python :: 3",
   "Operating System :: OS Independent",
 ]
-description = "A toy data pipeline"
-keywords = ["data pipeline"]
+description = "Build quick & consistent linear ETL sequences using independent & testable stages."
+keywords = ["data pipeline", "etl"]
 license = "GPL-3.0-only"
 name = "micropipe"
 readme = "README.md"
 repository = "https://github.com/ProfHercules/micropipe"
-version = "0.3.0"
+version = "0.4.0"
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/ProfHercules/micropipe/issues"
 
 [tool.poetry.dependencies]
-aiofiles = "^0.8.0"
 aiohttp = "^3.8.1"
 coloredlogs = "^15.0.1"
 diskcache = "^5.4.0"
@@ -24,17 +23,19 @@ python = "^3.8"
 tqdm = "^4.62.3"
 
 [tool.poetry.dev-dependencies]
+#testing
 aioresponses = "^0.7.3"
-black = "^21.12b0"
-isort = "^5.10.1"
-poethepoet = "^0.12.2"
 pyre-check = "^0.9.10"
 pytest = "^6.2.5"
 pytest-asyncio = "^0.17.1"
-pytest-cov = "^3.0.0"
-# for examples
-pandas = "^1.0.0"
 pytest-benchmark = "^3.4.1"
+pytest-cov = "^3.0.0"
+# extra
+black = "^21.12b0"
+isort = "^5.10.1"
+poethepoet = "^0.12.2"
+# examples
+pandas = "^1.0.0"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"
@@ -48,8 +49,8 @@ _black = "black ."
 _isort = "isort ."
 _pyre = "pyre"
 _pytest = "pytest"
-format = ["_black", "_isort"]
-test = ["_pyre", "_pytest"]
+format = ["_black", "_isort"] # poetry run poe format -> black. && isort .
+test = ["_pyre", "_pytest"] # poetry run poe test -> pyre && pytest
 
 [tool.isort]
 profile = "black"

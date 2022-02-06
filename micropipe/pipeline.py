@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from typing import AsyncIterable, Iterable, List, Optional, TypeVar, Union
+from typing import AsyncIterable, Iterable, List, Tuple, TypeVar, Union
 
 import coloredlogs
 from tqdm.asyncio import tqdm
@@ -15,20 +15,19 @@ I = TypeVar("I")  # input
 
 class Pipeline:
     logger: logging.Logger
-    stages: List[BaseStage]
+    stages: Tuple[BaseStage, ...]
     tasks: List[asyncio.Task]
 
     def __init__(
         self,
-        stages: List[BaseStage],
-        logger: Optional[logging.Logger] = None,
+        *stages: BaseStage,
     ):
         assert len(stages) > 0
         self.stages = stages
-        self.logger = logging.getLogger() if logger is None else logger
+        self.logger = logging.getLogger()
         self.tasks = []
 
-        coloredlogs.install(level=self.logger.level, logger=logger)
+        coloredlogs.install(level=self.logger.level, logger=self.logger)
 
     def pump(self, value: Union[Iterable[I], AsyncIterable[I]]):
         loop = asyncio.get_event_loop()
