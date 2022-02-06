@@ -14,7 +14,7 @@ def basic_example():
         stages.Transform(lambda fv: sum(fv.value)),
     )
 
-    lim = 10_000
+    lim = 1_000
 
     result = pipeline.pump(range(lim))
 

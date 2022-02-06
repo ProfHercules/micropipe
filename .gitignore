@@ -212,3 +212,5 @@ cython_debug/
 .pyre
 
 examples/**.csv
+
+test.db
