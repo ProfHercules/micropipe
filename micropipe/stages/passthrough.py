@@ -19,19 +19,18 @@ class Passthrough(BaseStage[I, I], Generic[I]):
         copy_mode: CopyMode = CopyMode.NONE,
         **kwargs,
     ):
-        super(Passthrough, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.__func = func
         self.__copy_mode = copy_mode
 
     async def _task_handler(self, flow_val: FlowValue[I]) -> bool:
-        result = self._wrap_flow_value(flow_val.value, flow_val.meta)
-        await self._output_queue.put(result)
+        await self._output(flow_val.value, flow_val.meta)
 
         if self.__copy_mode is CopyMode.NONE:
             self.__func(flow_val)
         elif self.__copy_mode is CopyMode.SHALLOW:
             self.__func(copy(flow_val))
-        elif self.__copy_mode is CopyMode.DEEP:
+        else:  # self.__copy_mode is CopyMode.DEEP:
             self.__func(deepcopy(flow_val))
 
         return True

@@ -16,12 +16,11 @@ class Filter(BaseStage[I, I], Generic[I]):
         should_keep: Callable[[FlowValue[I]], bool],
         **kwargs,
     ):
-        super(Filter, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.__should_keep = should_keep
 
     async def _task_handler(self, flow_val: FlowValue[I]) -> bool:
         if self.__should_keep(flow_val):
-            out_val = self._wrap_flow_value(flow_val.value, flow_val.meta)
-            await self._output_queue.put(out_val)
+            await self._output(flow_val.value, flow_val.meta)
 
         return True

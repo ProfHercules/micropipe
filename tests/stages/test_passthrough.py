@@ -1,3 +1,4 @@
+import asyncio
 from typing import Dict
 
 import pytest
@@ -10,16 +11,17 @@ from micropipe.types import EndFlow, FlowValue
 # CopyMode.NONE means the object can be modified by Passthrough func
 @pytest.mark.asyncio
 async def test_passthrough_no_copy_modify():
+    input_queue = asyncio.Queue()
+    input_queue.put_nowait(FlowValue({}))
+    input_queue.put_nowait(EndFlow())
+
     stage = Passthrough[Dict[str, str]](
         lambda x: x.value.__setitem__("foo", "bar"),
         copy_mode=CopyMode.NONE,
     )
 
-    stage._input_queue.put_nowait(FlowValue({}))
-    stage._input_queue.put_nowait(EndFlow())
-
-    assert stage._input_queue.qsize() == 2
-    await stage._flow()
+    assert input_queue.qsize() == 2
+    await stage.flow(input_queue.get)
     assert stage._output_queue.qsize() == 2
 
     mockval = stage._output_queue.get_nowait().value
@@ -37,11 +39,12 @@ async def test_passthrough_shallow_copy_shallow_modify():
         copy_mode=CopyMode.SHALLOW,
     )
 
-    stage._input_queue.put_nowait(FlowValue(original))
-    stage._input_queue.put_nowait(EndFlow())
+    input_queue = asyncio.Queue()
+    input_queue.put_nowait(FlowValue(original))
+    input_queue.put_nowait(EndFlow())
 
-    assert stage._input_queue.qsize() == 2
-    await stage._flow()
+    assert input_queue.qsize() == 2
+    await stage.flow(input_queue.get)
     assert stage._output_queue.qsize() == 2
 
     mockval = stage._output_queue.get_nowait().value
@@ -59,11 +62,12 @@ async def test_passthrough_shallow_copy_deep_modify():
         copy_mode=CopyMode.SHALLOW,
     )
 
-    stage._input_queue.put_nowait(FlowValue(original))
-    stage._input_queue.put_nowait(EndFlow())
+    input_queue = asyncio.Queue()
+    input_queue.put_nowait(FlowValue(original))
+    input_queue.put_nowait(EndFlow())
 
-    assert stage._input_queue.qsize() == 2
-    await stage._flow()
+    assert input_queue.qsize() == 2
+    await stage.flow(input_queue.get)
     assert stage._output_queue.qsize() == 2
 
     mockval = stage._output_queue.get_nowait().value
@@ -81,11 +85,12 @@ async def test_passthrough_deep_copy_deep_modify():
         copy_mode=CopyMode.DEEP,
     )
 
-    stage._input_queue.put_nowait(FlowValue(original))
-    stage._input_queue.put_nowait(EndFlow())
+    input_queue = asyncio.Queue()
+    input_queue.put_nowait(FlowValue(original))
+    input_queue.put_nowait(EndFlow())
 
-    assert stage._input_queue.qsize() == 2
-    await stage._flow()
+    assert input_queue.qsize() == 2
+    await stage.flow(input_queue.get)
     assert stage._output_queue.qsize() == 2
 
     mockval = stage._output_queue.get_nowait().value

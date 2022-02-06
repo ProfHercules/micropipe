@@ -1,2 +1,0 @@
-class PipelineException(Exception):
-    pass

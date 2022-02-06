@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any, Callable, Dict, Generic, Optional, TypeVar
+from typing import Any, Awaitable, Callable, Dict, Generic, Optional, TypeVar, Union
 
 T = TypeVar("T")
 O = TypeVar("O")
@@ -36,3 +36,7 @@ class CopyMode(Enum):
     SHALLOW = 1
     DEEP = 2
     NONE = 3
+
+
+# helper alias that depends on above classes
+TaskGetter = Callable[..., Awaitable[Union[FlowValue[T], EndFlow]]]

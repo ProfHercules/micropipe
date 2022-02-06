@@ -3,62 +3,43 @@ from __future__ import annotations
 import asyncio
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Generic, List, Optional, TypeVar, Union
+from typing import Generic, Optional, TypeVar, Union
 
 from tqdm.asyncio import tqdm
 
-from micropipe.types import EndFlow, FlowValue, MetaData, MetaFunc
+from micropipe.types import EndFlow, FlowValue, MetaData, MetaFunc, TaskGetter
 
 I = TypeVar("I")  # input
 O = TypeVar("O")  # output
 
 
 class BaseStage(Generic[I, O], ABC):
-    _input_queue: asyncio.Queue[Union[FlowValue[I], EndFlow]]
     _output_queue: asyncio.Queue[Union[FlowValue[O], EndFlow]]
     _meta_func: Optional[MetaFunc]
     _logger: logging.Logger
 
     def __init__(
         self,
-        input_queue: Optional[asyncio.Queue] = None,
         meta_func: Optional[MetaFunc] = None,
-        logger: Optional[logging.Logger] = None,
     ):
-        self._input_queue = asyncio.Queue() if input_queue is None else input_queue
         self._output_queue = asyncio.Queue()
         self._meta_func = meta_func
-        self._logger = logging.getLogger() if logger is None else logger
+        self._logger = logging.getLogger()
 
     @property
     def name(self) -> str:
         return self.__class__.__name__
 
-    def _read(self) -> List[FlowValue[O]]:
-        output = []
-        while not self._output_queue.empty():
-            res = self._output_queue.get_nowait()
+    @property
+    def output_task_getter(self) -> TaskGetter:
+        return self._output_queue.get
 
-            if not isinstance(res, EndFlow):
-                output.append(res)
-
-        return output
-
-    def _connect(self, prev_stage: BaseStage[Any, I]) -> asyncio.Task:
-        self._input_queue = prev_stage._output_queue
-        return asyncio.create_task(self._flow())
-
-    def _wrap_flow_value(self, out_val: O, meta: MetaData = {}) -> FlowValue[O]:
-        if self._meta_func:
-            meta = self._meta_func(out_val, meta)
-        return FlowValue(out_val, meta)
-
-    async def _flow(self) -> None:
+    async def flow(self, task_getter: TaskGetter) -> None:
         tasks = []
         scheduled = 0
 
         while True:
-            value = await self._input_queue.get()
+            value = await task_getter()
 
             if isinstance(value, EndFlow):
                 break
@@ -80,9 +61,17 @@ class BaseStage(Generic[I, O], ABC):
             pct,
         )
 
+        await self._mark_done()
+
+    async def _mark_done(self) -> None:
         await self._output_queue.put(EndFlow())
+
+    async def _output(self, value: O, meta: Optional[MetaData] = None) -> None:
+        if self._meta_func:
+            old_meta = {} if meta is None else meta
+            meta = self._meta_func(value, old_meta)
+        await self._output_queue.put(FlowValue(value, meta))
 
     @abstractmethod
     async def _task_handler(self, flow_val: FlowValue[I]) -> bool:
         ...
-        raise NotImplementedError()  # default _task_handler should not be called

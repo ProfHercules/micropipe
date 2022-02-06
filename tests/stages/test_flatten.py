@@ -1,3 +1,5 @@
+import asyncio
+
 import pytest
 
 from micropipe.stages import Flatten
@@ -8,12 +10,13 @@ from micropipe.types import EndFlow, FlowValue
 async def test_flatten():
     stage = Flatten()
 
-    stage._input_queue.put_nowait(FlowValue([i for i in range(10)]))
-    stage._input_queue.put_nowait(EndFlow())
+    input_queue = asyncio.Queue()
+    input_queue.put_nowait(FlowValue([i for i in range(10)]))
+    input_queue.put_nowait(EndFlow())
 
-    assert stage._input_queue.qsize() == 2
+    assert input_queue.qsize() == 2
 
-    await stage._flow()
+    await stage.flow(input_queue.get)
 
     assert stage._output_queue.qsize() == 11
     assert stage._output_queue.get_nowait().value == 0

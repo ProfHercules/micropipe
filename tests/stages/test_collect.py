@@ -1,3 +1,5 @@
+import asyncio
+
 import diskcache
 import pytest
 
@@ -7,12 +9,14 @@ from micropipe.types import EndFlow, FlowValue
 
 @pytest.mark.asyncio
 async def test_collect_list():
-    stage = CollectList()
-    for i in range(10):
-        stage._input_queue.put_nowait(FlowValue(i))
-    stage._input_queue.put_nowait(EndFlow())
+    input_queue = asyncio.Queue()
 
-    await stage._flow()
+    for i in range(10):
+        input_queue.put_nowait(FlowValue(i))
+    input_queue.put_nowait(EndFlow())
+
+    stage = CollectList()
+    await stage.flow(input_queue.get)
 
     assert stage._output_queue.qsize() == 2
     assert stage._output_queue.get_nowait() == FlowValue([i for i in range(10)])
@@ -21,12 +25,14 @@ async def test_collect_list():
 
 @pytest.mark.asyncio
 async def test_collect_list_batch_size():
-    stage = CollectList(batch_size=5)
-    for i in range(10):
-        stage._input_queue.put_nowait(FlowValue(i))
-    stage._input_queue.put_nowait(EndFlow())
+    input_queue = asyncio.Queue()
 
-    await stage._flow()
+    for i in range(10):
+        input_queue.put_nowait(FlowValue(i))
+    input_queue.put_nowait(EndFlow())
+
+    stage = CollectList(batch_size=5)
+    await stage.flow(input_queue.get)
 
     assert stage._output_queue.qsize() == 3
     assert stage._output_queue.get_nowait() == FlowValue([i for i in range(5)])
@@ -36,12 +42,14 @@ async def test_collect_list_batch_size():
 
 @pytest.mark.asyncio
 async def test_collect_deque():
-    stage = CollectDeque()
-    for i in range(10):
-        stage._input_queue.put_nowait(FlowValue(i))
-    stage._input_queue.put_nowait(EndFlow())
+    input_queue = asyncio.Queue()
 
-    await stage._flow()
+    for i in range(10):
+        input_queue.put_nowait(FlowValue(i))
+    input_queue.put_nowait(EndFlow())
+
+    stage = CollectDeque()
+    await stage.flow(input_queue.get)
 
     assert stage._output_queue.qsize() == 2
     val = stage._output_queue.get_nowait()
@@ -53,12 +61,14 @@ async def test_collect_deque():
 
 @pytest.mark.asyncio
 async def test_collect_deque_batch_size():
-    stage = CollectDeque(batch_size=5)
-    for i in range(10):
-        stage._input_queue.put_nowait(FlowValue(i))
-    stage._input_queue.put_nowait(EndFlow())
+    input_queue = asyncio.Queue()
 
-    await stage._flow()
+    for i in range(10):
+        input_queue.put_nowait(FlowValue(i))
+    input_queue.put_nowait(EndFlow())
+
+    stage = CollectDeque(batch_size=5)
+    await stage.flow(input_queue.get)
 
     assert stage._output_queue.qsize() == 3
 

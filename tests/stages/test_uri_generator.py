@@ -1,3 +1,5 @@
+import asyncio
+
 import pytest
 
 from micropipe.stages import UrlGenerator
@@ -10,11 +12,13 @@ async def test_uri_generator():
         template_url="https://jsonplaceholder.typicode.com/users/{id}",
         params=lambda id: {"id": str(id.value)},
     )
-    for i in range(10):
-        stage._input_queue.put_nowait(FlowValue(i))
-    stage._input_queue.put_nowait(EndFlow())
 
-    await stage._flow()
+    input_queue = asyncio.Queue()
+    for i in range(10):
+        input_queue.put_nowait(FlowValue(i))
+    input_queue.put_nowait(EndFlow())
+
+    await stage.flow(input_queue.get)
 
     assert stage._output_queue.qsize() == 11
 

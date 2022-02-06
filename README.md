@@ -6,6 +6,7 @@
 [![CI](https://github.com/ProfHercules/micropipe/actions/workflows/codecov.yml/badge.svg?branch=main&event=push)](https://github.com/ProfHercules/micropipe/actions/workflows/codecov.yml)
 ![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/profhercules/micropipe)
 ![GitHub last commit](https://img.shields.io/github/last-commit/profhercules/micropipe)
+[![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
 
 `micropipe` helps you build quick & consistent linear ETL sequences using independent "stages".
 

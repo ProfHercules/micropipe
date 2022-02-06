@@ -13,9 +13,8 @@ from typing import (
 
 from diskcache import Deque
 
-from micropipe.exceptions import PipelineException
 from micropipe.stages.base import BaseStage
-from micropipe.types import EndFlow, FlowValue
+from micropipe.types import EndFlow, FlowValue, TaskGetter
 
 I = TypeVar("I")  # input
 # currently O may be 'Sequence' in the case of Deque
@@ -35,17 +34,17 @@ class _CollectBase(BaseStage[I, O], Generic[I, O]):
         batch_size: int = 0,
         **kwargs,
     ):
-        super(_CollectBase, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         if batch_size == 1:
-            raise PipelineException("A batch size of 1 is pointless")
+            raise ValueError("A batch size of 1 is pointless")
         self.__new_batch = new_batch
         self._batch_size = batch_size
 
-    async def _flow(self) -> None:
+    async def flow(self, task_getter: TaskGetter) -> None:
         batch = self.__new_batch()
 
         while True:
-            v = await self._input_queue.get()
+            v = await task_getter()
 
             if isinstance(v, EndFlow):
                 break
@@ -55,15 +54,15 @@ class _CollectBase(BaseStage[I, O], Generic[I, O]):
             # 0 means we never execute this branch, since
             # len(batch) > 0 (always)
             if len(batch) == self._batch_size:
-                await self._output_queue.put(FlowValue(batch))
+                await self._output(batch)
                 batch = self.__new_batch()
 
         if len(batch) > 0:
-            await self._output_queue.put(FlowValue(batch))
+            await self._output(batch)
 
         self._logger.info("[%s] Collect complete", self.name)
 
-        await self._output_queue.put(EndFlow())
+        await self._mark_done()
 
     async def _task_handler(self, flow_val: FlowValue[I]) -> bool:
         pass
@@ -73,8 +72,12 @@ class _CollectBase(BaseStage[I, O], Generic[I, O]):
 
 
 class CollectList(_CollectBase[I, List[I]], Generic[I]):
-    def __init__(self, batch_size: int = 0, **kwargs):
-        super(CollectList, self).__init__(
+    def __init__(
+        self,
+        batch_size: int = 0,
+        **kwargs,
+    ):
+        super().__init__(
             lambda: [],
             batch_size,
             **kwargs,
@@ -88,7 +91,7 @@ class CollectDeque(_CollectBase[I, Deque], Generic[I]):
         cache_directory: Optional[str] = None,
         **kwargs,
     ):
-        super(CollectDeque, self).__init__(
+        super().__init__(
             lambda: Deque(directory=cache_directory),
             batch_size,
             **kwargs,

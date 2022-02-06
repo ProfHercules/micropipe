@@ -20,7 +20,7 @@ class UrlGenerator(BaseStage[I, str], Generic[I]):
         params: Callable[[FlowValue[I]], Dict[str, str]],
         **kwargs,
     ):
-        super(UrlGenerator, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.__template_url = template_url
         self.__params = params
 
@@ -47,7 +47,6 @@ class UrlGenerator(BaseStage[I, str], Generic[I]):
     async def _task_handler(self, flow_val: FlowValue[I]) -> bool:
         url = self.__gen_url(flow_val)
 
-        result = self._wrap_flow_value(url, flow_val.meta)
-        await self._output_queue.put(result)
+        await self._output(url, flow_val.meta)
 
         return True
