@@ -8,15 +8,13 @@ from micropipe import Pipeline, stages
 
 # create a pipeline
 pipeline = Pipeline(
-    stages=[
-        # actually call the API, using the default GET method,
-        # once we have a response decode it using resp.json()
-        stages.Request(lambda resp: resp.json()),
-        # transform the list of posts into a pandas dataframe
-        stages.Transform(lambda fv: pd.DataFrame(fv.value)),
-        # use a passthrough stage to write the DF to a csv file
-        stages.Passthrough(lambda fv: fv.value.to_csv("posts.csv", index=False)),
-    ]
+    # actually call the API, using the default GET method,
+    # once we have a response decode it using resp.json()
+    stages.Request(lambda resp: resp.json()),
+    # transform the list of posts into a pandas dataframe
+    stages.Transform(lambda fv: pd.DataFrame(fv.value)),
+    # use a passthrough stage to write the DF to a csv file
+    stages.Passthrough(lambda fv: fv.value.to_csv("posts.csv", index=False)),
 )
 
 # let the pipeline 'flow' (sync means we don't have to worry about an event loop)
