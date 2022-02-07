@@ -3,7 +3,7 @@ import math
 from micropipe import Pipeline, stages
 
 
-def basic_example():
+def basic_example(lim: int = 10_000):
     pipeline = Pipeline(
         stages.Transform(lambda fv: fv.value ** 2),
         stages.Filter(lambda fv: fv.value % 2 == 0),
@@ -14,15 +14,16 @@ def basic_example():
         stages.Transform(lambda fv: sum(fv.value)),
     )
 
-    lim = 10_000
-
     result = pipeline.pump(range(lim))
+
+    return result
+
+
+def test_execution_speed(benchmark):
+    lim = 10_000
+    result = benchmark(basic_example, lim=10_000)
 
     assert len(result) == 1
     assert result[0].value == sum(
         [math.asin(math.sin(i ** 2) ** 2) for i in range(lim) if i % 2 == 0]
     )
-
-
-def test_execution_speed(benchmark):
-    benchmark(basic_example)

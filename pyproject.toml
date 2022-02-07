@@ -50,7 +50,7 @@ asyncio_mode = 'strict'
 [tool.poe.tasks]
 # testing
 audit = "bandit -r micropipe/"
-bench = "pytest --benchmark-only --benchmark-verbose --benchmark-min-rounds=10 --benchmark-disable-gc --benchmark-autosave --benchmark-compare=0 --benchmark-compare-fail=min:5%"
+bench = "pytest --benchmark-only --benchmark-sort=name --benchmark-verbose --benchmark-min-rounds=25 --benchmark-disable-gc --benchmark-autosave --benchmark-compare=0 --benchmark-compare-fail=min:5%"
 test = "pytest --benchmark-skip"
 types = "pyre"
 # compound-testing
