@@ -49,10 +49,12 @@ asyncio_mode = 'strict'
 
 [tool.poe.tasks]
 # testing
-_bandit = "bandit -r micropipe/"
-_pyre = "pyre"
-_pytest = "pytest"
-test = ["_pyre", "_pytest", "_bandit"] # poetry run poe test -> pyre && pytest
+audit = "bandit -r micropipe/"
+bench = "pytest --benchmark-only --benchmark-verbose --benchmark-min-rounds=10 --benchmark-disable-gc --benchmark-autosave --benchmark-compare=0 --benchmark-compare-fail=min:5%"
+test = "pytest --benchmark-skip"
+types = "pyre"
+# compound-testing
+test_suite = ["types", "audit", "test", "benchmark"]
 # formatting
 _black = "black ."
 _isort = "isort ."
