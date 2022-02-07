@@ -38,5 +38,17 @@ class CopyMode(Enum):
     NONE = 3
 
 
+class HttpMethod(Enum):
+    GET = "GET"
+    POST = "POST"
+    HEAD = "HEAD"
+    PUT = "PUT"
+    DELETE = "DELETE"
+    CONNECT = "CONNECT"
+    OPTIONS = "OPTIONS"
+    TRACE = "TRACE"
+    PATCH = "PATCH"
+
+
 # helper alias that depends on above classes
 TaskGetter = Callable[..., Awaitable[Union[FlowValue[T], EndFlow]]]

@@ -1,27 +1,15 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Awaitable, Callable, Generic, Literal, Optional, TypeVar
+from typing import Awaitable, Callable, Generic, Optional, TypeVar
 
 import aiohttp
 from aiohttp import ClientResponse, ClientSession
 
 from micropipe.stages.base import BaseStage
-from micropipe.types import FlowValue, TaskGetter
+from micropipe.types import FlowValue, HttpMethod, TaskGetter
 
 O = TypeVar("O")  # output
-
-HttpMethod = Literal[
-    "GET",
-    "HEAD",
-    "POST",
-    "PUT",
-    "DELETE",
-    "CONNECT",
-    "OPTIONS",
-    "TRACE",
-    "PATCH",
-]
 
 
 class Request(BaseStage[str, O], Generic[O]):
@@ -34,7 +22,7 @@ class Request(BaseStage[str, O], Generic[O]):
     def __init__(
         self,
         decode_func: Callable[[ClientResponse], Awaitable[O]],
-        method: HttpMethod = "GET",
+        method: HttpMethod = HttpMethod.GET,
         retry_limit: int = 5,
         retry_timout_sec: int = 15,
         session: Optional[ClientSession] = None,
@@ -69,7 +57,7 @@ class Request(BaseStage[str, O], Generic[O]):
         while remaining_tries > 0:
             remaining_tries -= 1
             try:
-                response = await session.request(self.__method, flow_val.value)
+                response = await session.request(self.__method.name, flow_val.value)
                 status = response.status
 
                 if status < 200 or status >= 300:
