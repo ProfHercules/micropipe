@@ -46,11 +46,13 @@ class RateLimit(BaseStage[I, I], Generic[I]):
                 await asyncio.sleep(sleep_for)
 
     async def flow(self, task_getter: TaskGetter):
-        async for value in tqdm(self.__limited_generator(task_getter), desc=self.name):
-            if isinstance(value, EndFlow):
+        async for fv in tqdm(self.__limited_generator(task_getter), desc=self.name):
+            if isinstance(fv, EndFlow):
                 break
-            # else
-            await self._output(value)
+            elif isinstance(fv, FlowValue):
+                await self._output(fv.value, fv.meta)
+            else:
+                raise ValueError("Unexpected type in `RateLimit` queue")
 
         await self._mark_done()
 
